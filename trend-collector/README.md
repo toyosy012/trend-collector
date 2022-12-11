@@ -26,10 +26,11 @@ $ pip-sync
 
 ## APIの実行
 
-- PYTHONPATHへのプロジェクトディレクトリパス追加
-
 ```
-$ export PYTHONPATH=/Users/yasui/Practice/trend_collector/trend-collector/trendcollector/libs:$PYTHONPATH
 $ cd trendcollector
 $ uvicorn server:app --reload
 ```
+
+## APIリファレンス
+
+- https://127.0.0.1:8000/docs
