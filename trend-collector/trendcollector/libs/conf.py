@@ -9,6 +9,11 @@ class Environment(BaseSettings):
     bearer_token: str
     consumer_key: str
     consumer_secret: str
+    db_user: str
+    db_pass: str
+    db_name: str
+    host: str
+    port: int
 
     @classmethod
     @validator('*', pre=True)
