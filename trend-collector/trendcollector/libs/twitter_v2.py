@@ -31,9 +31,20 @@ class TwitterV2(Twitter):
             access_token=access_token, access_token_secret=access_token_secret,
         )
 
-    def get_me(self):
+    def get_me(self) -> TwitterAccount:
         try:
             resp = self.client.get_me()
+            return TwitterAccount(resp[0]["id"], resp[0]["name"], resp[0]["username"])
+        except tweepy.Unauthorized as e:
+            raise TwitterUnAuthorized(e.response.status_code, FAILED_GET_MY_ACCOUNT, e.api_messages)
+        except TimeoutError:
+            raise IntervalServerError(HTTPStatus.INTERNAL_SERVER_ERROR, FAILED_GET_MY_ACCOUNT, [TIMEOUT_REQUEST])
+        except Exception:
+            raise IntervalServerError(HTTPStatus.INTERNAL_SERVER_ERROR, FAILED_GET_MY_ACCOUNT, [UNEXPECTED_ERROR])
+
+    def get_account(self, account_id: int) -> TwitterAccount:
+        try:
+            resp = self.client.get_user(id=account_id)
             return TwitterAccount(resp[0]["id"], resp[0]["name"], resp[0]["username"])
         except tweepy.Unauthorized as e:
             raise TwitterUnAuthorized(e.response.status_code, FAILED_GET_MY_ACCOUNT, e.api_messages)
