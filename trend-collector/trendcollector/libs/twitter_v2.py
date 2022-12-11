@@ -1,6 +1,6 @@
 import tweepy
 from http import HTTPStatus
-from .client import Twitter, CustomException
+from .client import Twitter, TwitterAccount, CustomException
 
 FAILED_GET_MY_ACCOUNT = "自身のアカウントの取得に失敗"
 UNEXPECTED_ERROR = "予期せぬエラーが発生"
@@ -33,10 +33,11 @@ class TwitterV2(Twitter):
 
     def get_me(self):
         try:
-            return self.client.get_me()
+            resp = self.client.get_me()
+            return TwitterAccount(resp[0]["id"], resp[0]["name"], resp[0]["username"])
         except tweepy.Unauthorized as e:
             raise TwitterUnAuthorized(e.response.status_code, FAILED_GET_MY_ACCOUNT, e.api_messages)
-        except TimeoutError as e:
-            raise IntervalServerError(HTTPStatus.INTERNAL_SERVER_ERROR, FAILED_GET_MY_ACCOUNT, list(TIMEOUT_REQUEST))
-        except Exception as e:
-            raise IntervalServerError(HTTPStatus.INTERNAL_SERVER_ERROR, FAILED_GET_MY_ACCOUNT, list(UNEXPECTED_ERROR))
+        except TimeoutError:
+            raise IntervalServerError(HTTPStatus.INTERNAL_SERVER_ERROR, FAILED_GET_MY_ACCOUNT, [TIMEOUT_REQUEST])
+        except Exception:
+            raise IntervalServerError(HTTPStatus.INTERNAL_SERVER_ERROR, FAILED_GET_MY_ACCOUNT, [UNEXPECTED_ERROR])
