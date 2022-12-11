@@ -22,9 +22,13 @@ class AccountReply(BaseModel):
     result: Account = Field(None, title="Account", example=Account())
 
 
+class AccountsReply(BaseModel):
+    result: List[Account] = Field(None, title="Account", example=[Account()])
+
+
 class HttpErrorMiddleware(BaseHTTPMiddleware):
     async def dispatch(
-        self, request: Request, call_next: RequestResponseEndpoint
+            self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
         try:
             resp: Response = await call_next(request)
