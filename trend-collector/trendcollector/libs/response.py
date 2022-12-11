@@ -1,5 +1,6 @@
 from typing import List
 from fastapi import Request, Response
+from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from pydantic import BaseModel, Field
@@ -28,6 +29,8 @@ class HttpErrorMiddleware(BaseHTTPMiddleware):
         try:
             resp: Response = await call_next(request)
         except CustomException as e:
-            return JSONResponse(content=e.details, status_code=e.code)
+            return JSONResponse(
+                status_code=e.code, content=jsonable_encoder(ErrorReply(message=e.message, details=e.details))
+            )
         else:
             return resp
