@@ -1,7 +1,24 @@
+from typing import List
 from fastapi import Request, Response
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
+from pydantic import BaseModel, Field
 from .client import CustomException
+
+
+class Account(BaseModel):
+    account_id: int = Field(default=0, example=0)
+    name: str = Field(default="hogehoge", example="hogehoge")
+    user_name: str = Field(default="@hogehoge", example="@hogehoge")
+
+
+class ErrorReply(BaseModel):
+    message: str = Field(None, example="hogehoge")
+    details: List[str] = Field(None, example=[""])
+
+
+class AccountReply(BaseModel):
+    result: Account = Field(None, title="Account", example=Account())
 
 
 class HttpErrorMiddleware(BaseHTTPMiddleware):
