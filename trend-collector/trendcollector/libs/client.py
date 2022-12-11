@@ -23,3 +23,6 @@ class Twitter(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def get_me(self) -> TwitterAccount: pass
 
+    @abc.abstractmethod
+    def get_account(self, account_id: int) -> TwitterAccount: pass
+
