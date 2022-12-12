@@ -18,6 +18,7 @@ class IntervalServerError(CustomException):
 
 
 class TwitterV2(Twitter):
+    api: tweepy.API
     client: tweepy.Client
 
     def __init__(
@@ -30,6 +31,9 @@ class TwitterV2(Twitter):
             consumer_key=consumer_key, consumer_secret=consumer_secret,
             access_token=access_token, access_token_secret=access_token_secret,
         )
+        auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+        auth.set_access_token(access_token, access_token_secret)
+        self.api = tweepy.API(auth)
 
     def get_me(self) -> TwitterAccount:
         try:
@@ -52,3 +56,12 @@ class TwitterV2(Twitter):
             raise IntervalServerError(HTTPStatus.INTERNAL_SERVER_ERROR, FAILED_GET_MY_ACCOUNT, [TIMEOUT_REQUEST])
         except Exception:
             raise IntervalServerError(HTTPStatus.INTERNAL_SERVER_ERROR, FAILED_GET_MY_ACCOUNT, [UNEXPECTED_ERROR])
+
+    def list_trends(self) -> list[Trend]:
+        try:
+            resp = self.api.get_place_trends(23424856)[0]['trends']
+        except Forbidden as e:
+            self.logger.error(e)
+            raise TwitterForbidden(HTTPStatus.INTERNAL_SERVER_ERROR, "トレンドリストの取得に失敗", [FORBIDDEN_ACCESS])
+        else:
+            return [Trend(name=t.name, url=t.url, query=t.query, tweet_volume=t.tweet_volume) for t in resp]

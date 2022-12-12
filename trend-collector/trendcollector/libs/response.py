@@ -13,6 +13,13 @@ class Account(BaseModel):
     user_name: str = Field(default="@hogehoge", example="@hogehoge")
 
 
+class TwitterTrend(BaseModel):
+    name: str = Field(default="hogehoge", example="hogehoge")
+    url: str = Field(default="https://twitter.com/", example="https://twitter.com/")
+    query: str = Field(default="%E3%", example="%E3%")
+    tweet_volume: int = Field(default=0, example=1000)
+
+
 class ErrorReply(BaseModel):
     message: str = Field(None, example="hogehoge")
     details: List[str] = Field(None, example=[""])
@@ -24,6 +31,10 @@ class AccountReply(BaseModel):
 
 class AccountsReply(BaseModel):
     result: List[Account] = Field(None, title="Account", example=[Account()])
+
+
+class TwitterTrendsReply(BaseModel):
+    result: list[TwitterTrend] = Field(None, title="Trends", example=[TwitterTrend()])
 
 
 class HttpErrorMiddleware(BaseHTTPMiddleware):

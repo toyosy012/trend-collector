@@ -1,7 +1,7 @@
 import abc
 from typing import List
 from .accessor import DBAccessor
-from ..client import Twitter, TwitterAccount
+from ..client import Trend, Twitter, TwitterAccount
 
 
 class CollectorSvc(metaclass=abc.ABCMeta):
@@ -44,3 +44,5 @@ class TwitterCollector(CollectorSvc):
         account = self.twitter_cli.get_account(account_id)
         return self.db_accessor.update_account(account)
 
+    def list_trends(self) -> list[Trend]:
+        return self.twitter_cli.list_trends()
