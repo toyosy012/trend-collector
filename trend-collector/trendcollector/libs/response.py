@@ -1,4 +1,3 @@
-from typing import List
 from fastapi import Request, Response
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
@@ -26,8 +25,8 @@ class TwitterTrend(BaseModel):
 
 
 class ErrorReply(BaseModel):
-    message: str = Field(None, example="hogehoge")
-    details: List[str] = Field(None, example=[""])
+    message: str = Field(None, example="エラーが発生しました")
+    details: list[str] = Field(None, example=["エラー原因を列挙"])
 
 
 class AccountReply(BaseModel):
@@ -35,7 +34,7 @@ class AccountReply(BaseModel):
 
 
 class AccountsReply(BaseModel):
-    result: List[Account] = Field(None, title="Account", example=[Account()])
+    result: list[Account] = Field(None, title="Account", example=[Account()])
 
 
 class TwitterTrendsReply(BaseModel):
