@@ -1,5 +1,12 @@
 from pydantic import BaseSettings, validator
 
+
+DISPLAY_NAME = "toyosy012"
+USER_NAME = "toyosy012"
+TREND_NAME = "トレンド"
+TREND_SEARCH_URL = "https://twitter.com/"
+TREND_QUERY = "%E3%"
+
 validate_error_format: str = "Validate error: {}"
 
 

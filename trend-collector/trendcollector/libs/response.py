@@ -5,18 +5,23 @@ from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from pydantic import BaseModel, Field
 from .client import CustomException
+from .conf import *
+
+
+class Token(BaseModel):
+    token: str = Field(None, example="token")
 
 
 class Account(BaseModel):
     account_id: int = Field(default=0, example=0)
-    name: str = Field(default="hogehoge", example="hogehoge")
-    user_name: str = Field(default="@hogehoge", example="@hogehoge")
+    name: str = Field(default=DISPLAY_NAME, example=DISPLAY_NAME)
+    user_name: str = Field(default=USER_NAME, example=USER_NAME)
 
 
 class TwitterTrend(BaseModel):
-    name: str = Field(default="hogehoge", example="hogehoge")
-    url: str = Field(default="https://twitter.com/", example="https://twitter.com/")
-    query: str = Field(default="%E3%", example="%E3%")
+    name: str = Field(default=TREND_NAME, example=TREND_NAME)
+    url: str = Field(default=TREND_SEARCH_URL, example=TREND_SEARCH_URL)
+    query: str = Field(default=TREND_QUERY, example=TREND_QUERY)
     tweet_volume: int = Field(default=0, example=1000)
 
 
