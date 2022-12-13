@@ -1,10 +1,17 @@
 import tweepy
+from tweepy.errors import Forbidden, Unauthorized
 from http import HTTPStatus
-from .client import Twitter, TwitterAccount, CustomException
+from .client import Trend, Twitter, TwitterAccount, CustomException
 
+FORBIDDEN_ACCESS = "アクセス権限がないために失敗"
 FAILED_GET_MY_ACCOUNT = "自身のアカウントの取得に失敗"
 UNEXPECTED_ERROR = "予期せぬエラーが発生"
 TIMEOUT_REQUEST = "リクエストタイムアウト"
+
+
+class TwitterForbidden(CustomException):
+    def __init__(self, code: int, message: str, details: list[str]):
+        super().__init__(code, message, details)
 
 
 class TwitterUnAuthorized(CustomException):
