@@ -9,12 +9,15 @@ from libs.services.collector import TwitterCollector
 from libs.twitter_v2 import TwitterV2
 from libs.response import Account, AccountReply, AccountsReply, ErrorReply, HttpErrorMiddleware
 
+
+logger = logging.getLogger('uvicorn')
 env = Environment()
 app = FastAPI()
 twitter_v2_cli = TwitterV2(
     env.bearer_token,
     env.consumer_key, env.consumer_secret,
-    env.access_token, env.access_token_secret
+    env.access_token, env.access_token_secret,
+    logger
 )
 
 
