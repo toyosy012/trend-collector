@@ -1,6 +1,6 @@
 import abc
 from typing import List
-from .accessor import DBAccessor
+from .accessor import TwitterAccountAccessor
 from ..client import Twitter
 from ..models import Trend, TwitterAccount
 
@@ -27,7 +27,7 @@ class CollectorSvc(metaclass=abc.ABCMeta):
 
 class TwitterCollector(CollectorSvc):
 
-    def __init__(self, db_accessor: DBAccessor, twitter_cli: Twitter):
+    def __init__(self, db_accessor: TwitterAccountAccessor, twitter_cli: Twitter):
         self.db_accessor = db_accessor
         self.twitter_cli = twitter_cli
 

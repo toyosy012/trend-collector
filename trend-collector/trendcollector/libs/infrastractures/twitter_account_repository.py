@@ -8,7 +8,7 @@ from sqlalchemy.orm.exc import DetachedInstanceError
 from typing import List
 
 from .schemas import TwitterAccountTable
-from ..services import CustomException, DBAccessor
+from ..services import CustomException, TwitterAccountAccessor
 from ..models.twitter import TwitterAccount
 
 # https://cloud.google.com/sql/docs/mysql/manage-connections?hl=ja
@@ -35,7 +35,7 @@ class RuntimeException(CustomException):
         super().__init__(code, message, details)
 
 
-class TwitterAccountRepository(DBAccessor):
+class TwitterAccountRepository(TwitterAccountAccessor):
     engine: Engine
     logger: Logger
 
