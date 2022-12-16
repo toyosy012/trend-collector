@@ -9,3 +9,14 @@ class TwitterAccount:
         self.account_id = account_id
         self.name = name
         self.user_name = user_name
+
+
+class Trend:
+    name: str
+    query: str
+    tweet_volume: int | None
+
+    def __init__(self, name: str, query: str, tweet_volume: int | None):
+        self.name = name
+        self.query = query
+        self.tweet_volume = tweet_volume if tweet_volume is not None else 0
