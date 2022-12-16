@@ -76,18 +76,11 @@ try:
         resp = twitter_svc.update_account(account_id)
         return AccountReply(result=Account(account_id=resp.account_id, name=resp.name, user_name=resp.user_name))
 
-    @app.get("/trends")
-    async def list_trends():
-        resp = twitter_svc.list_trends()
+    @app.get("/trends/current/{woeid}", response_model=TwitterTrendsReply, responses={500: {"model": ErrorReply}})
+    async def collect_current_trends(woeid: int):
+        resp = twitter_svc.list_trends(woeid)
         return TwitterTrendsReply(
-            result=[
-                TwitterTrend(
-                    name=r.name,
-                    url=r.url,
-                    query=r.query,
-                    tweet_volue=r.tweet_volume
-                ) for r in resp
-            ]
+            result=[TwitterTrend(name=r.name, query=r.query, tweet_volue=r.tweet_volume) for r in resp]
         )
 
     app.add_middleware(HttpErrorMiddleware)
