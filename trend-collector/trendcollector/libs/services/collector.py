@@ -1,7 +1,8 @@
 import abc
 from typing import List
 from .accessor import DBAccessor
-from ..client import Trend, Twitter, TwitterAccount
+from ..client import Twitter
+from ..models import Trend, TwitterAccount
 
 
 class CollectorSvc(metaclass=abc.ABCMeta):
@@ -20,6 +21,9 @@ class CollectorSvc(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def update_account(self, account: TwitterAccount) -> TwitterAccount: pass
 
+    @abc.abstractmethod
+    def list_trends(self, woeid: int) -> list[Trend]: pass
+
 
 class TwitterCollector(CollectorSvc):
 
@@ -37,12 +41,13 @@ class TwitterCollector(CollectorSvc):
     def list_accounts(self) -> List[TwitterAccount]:
         return self.db_accessor.list_accounts()
 
-    def get_account(self, account_id: int) -> TwitterAccount:
-        return self.db_accessor.get_account(account_id)
+    def get_account(self, user_id: int) -> TwitterAccount:
+        return self.db_accessor.get_account(user_id)
 
-    def update_account(self, account_id: int) -> TwitterAccount:
-        account = self.twitter_cli.get_account(account_id)
+    def update_account(self, user_id: int) -> TwitterAccount:
+        old = self.db_accessor.get_account(user_id)
+        account = self.twitter_cli.get_account(user_id, old.account_id)
         return self.db_accessor.update_account(account)
 
-    def list_trends(self) -> list[Trend]:
-        return self.twitter_cli.list_trends()
+    def list_trends(self, woeid: int) -> list[Trend]:
+        return self.twitter_cli.list_trends(woeid)
