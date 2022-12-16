@@ -1,5 +1,5 @@
 import logging
-
+import sqlalchemy
 import pymysql
 
 from fastapi import Depends, FastAPI
@@ -96,6 +96,8 @@ try:
 
 # DBコネクションの切断などで切れた場合に捕捉するコード
 # TODO logging後にシャットダウンして通知しないと気づかない
+except ConnectionRefusedError as e:
+    logging.fatal(e)
 except sqlalchemy.exc.OperationalError as e:
     logging.fatal(e)
 except pymysql.err.OperationalError as e:
