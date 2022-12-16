@@ -3,8 +3,8 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from pydantic import BaseModel, Field
-from .client import CustomException
 from .conf import *
+from .services import CustomException
 
 
 class Token(BaseModel):
@@ -18,10 +18,9 @@ class Account(BaseModel):
 
 
 class TwitterTrend(BaseModel):
-    name: str = Field(default=TREND_NAME, example=TREND_NAME)
-    url: str = Field(default=TREND_SEARCH_URL, example=TREND_SEARCH_URL)
-    query: str = Field(default=TREND_QUERY, example=TREND_QUERY)
-    tweet_volume: int = Field(default=0, example=1000)
+    name: str = Field(None, example=TREND_NAME)
+    query: str = Field(None, example=TREND_QUERY)
+    tweet_volume: int = Field(None, example=1000)
 
 
 class ErrorReply(BaseModel):
@@ -38,7 +37,8 @@ class AccountsReply(BaseModel):
 
 
 class TwitterTrendsReply(BaseModel):
-    result: list[TwitterTrend] = Field(None, title="Trends", example=[TwitterTrend()])
+    result: list[TwitterTrend] = Field(
+        None, title="Trends", example=[TwitterTrend(neme=TREND_NAME, query=TREND_QUERY, tweet_volume=0)])
 
 
 class HttpErrorMiddleware(BaseHTTPMiddleware):
