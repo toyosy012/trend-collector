@@ -4,11 +4,10 @@ from sqlalchemy.ext.declarative import declarative_base
 
 TWITTER_ACCOUNTS = "twitter_accounts"
 
+Base = declarative_base()
 
-base = declarative_base()
 
-
-class TwitterAccountTable(base):
+class TwitterAccountTable(Base):
     __tablename__ = TWITTER_ACCOUNTS
 
     id = Column(Integer, primary_key=True)
