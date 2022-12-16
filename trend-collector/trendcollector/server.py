@@ -2,9 +2,10 @@ import logging
 
 import pymysql
 import sqlalchemy
-from fastapi import FastAPI
+from sqlalchemy.pool import QueuePool
 
-from libs.infrastractures.database import TwitterRepository
+from libs.infrastractures.schemas import Base
+from libs.infrastractures.twitter_account_repository import TwitterAccountRepository
 from libs.response import *
 from libs.services.collector import TwitterCollector
 from libs.twitter_v2 import TwitterV2
@@ -19,9 +20,26 @@ twitter_v2_cli = TwitterV2(
     logger
 )
 
+engine = sqlalchemy.create_engine(
+    # mysql+pymysql://<db_user>:<db_pass>@<db_host>:<db_port>/<db_name>
+    sqlalchemy.engine.url.URL.create(
+        drivername="mysql+pymysql",
+        username=env.db_user,
+        password=env.db_pass,
+        database=env.db_name,
+        host=env.host,
+        port=env.port,
+    ),
+    # 複数のリポジトリで使い回すので多めにコネクションをプールできるようにする
+    poolclass=QueuePool,
+    pool_size=10,
+    max_overflow=20
+)
+Base.metadata.create_all(engine)
+
 
 try:
-    twitter_db_cli = TwitterRepository(env.db_user, env.db_pass, env.db_name, env.host, env.port)
+    twitter_db_cli = TwitterAccountRepository(engine, logger)
 
     twitter_svc = TwitterCollector(twitter_db_cli, twitter_v2_cli)
 
