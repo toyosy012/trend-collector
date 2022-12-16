@@ -1,9 +1,9 @@
 import abc
 from typing import List
-from ..models.twitter import TwitterAccount
+from ..models.twitter import Trend, TwitterAccount
 
 
-class DBAccessor(metaclass=abc.ABCMeta):
+class TwitterAccountAccessor(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def list_accounts(self) -> List[TwitterAccount]: pass
 
@@ -12,3 +12,17 @@ class DBAccessor(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def get_account(self, user_id: int) -> TwitterAccount: pass
+
+
+class TrendAccessor(metaclass=abc.ABCMeta):
+    @abc.abstractmethod
+    def list(self) -> list[Trend]: pass
+
+    @abc.abstractmethod
+    def get(self, _id: int) -> TwitterAccount: pass
+
+    @abc.abstractmethod
+    def update(self, trend: Trend) -> Trend: pass
+
+    @abc.abstractmethod
+    def delete(self, _id: int) -> bool: pass
