@@ -54,9 +54,10 @@ try:
              response_model=AccountReply,
              responses={401: {"model": ErrorReply}, 500: {"model": ErrorReply}}
              )
-    async def get_account():
+    async def get_my_account():
         resp = twitter_v2_cli.get_me()
-        return AccountReply(result=Account(account_id=resp.account_id, name=resp.name, user_name=resp.user_name))
+        return AccountReply(
+            result=Account(user_id=resp.user_id, account_id=resp.account_id, name=resp.name, user_name=resp.user_name))
 
 
     @app.get("/accounts/{account_id}",
@@ -68,13 +69,14 @@ try:
         return AccountReply(result=Account(account_id=resp.account_id, name=resp.name, user_name=resp.user_name))
 
 
-    @app.put("/account/{id}",
+    @app.get("/update/{user_id}",
              response_model=AccountReply,
              responses={401: {"model": ErrorReply}, 500: {"model": ErrorReply}}
              )
-    async def update_account(account_id: int):
-        resp = twitter_svc.update_account(account_id)
-        return AccountReply(result=Account(account_id=resp.account_id, name=resp.name, user_name=resp.user_name))
+    async def update_account(user_id: int):
+        resp = twitter_svc.update_account(user_id)
+        return AccountReply(
+            result=Account(user_id=resp.user_id, account_id=resp.account_id, name=resp.name, user_name=resp.user_name))
 
     @app.get("/trends/current/{woeid}", response_model=TwitterTrendsReply, responses={500: {"model": ErrorReply}})
     async def collect_current_trends(woeid: int):
