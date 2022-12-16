@@ -4,7 +4,6 @@ import pymysql
 import sqlalchemy
 from sqlalchemy.pool import QueuePool
 
-from libs.infrastractures.schemas import Base
 from libs.infrastractures.twitter_account_repository import TwitterAccountRepository
 from libs.response import *
 from libs.services.collector import TwitterCollector
@@ -35,7 +34,6 @@ engine = sqlalchemy.create_engine(
     pool_size=10,
     max_overflow=20
 )
-Base.metadata.create_all(engine)
 
 
 try:
