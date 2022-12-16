@@ -46,7 +46,7 @@ try:
              )
     async def list_accounts():
         resp = twitter_svc.list_accounts()
-        res = [Account(account_id=r.account_id, name=r.name, user_name=r.user_name) for r in resp]
+        res = [Account(user_id=r.user_id, account_id=r.account_id, name=r.name, user_name=r.user_name) for r in resp]
         return AccountsReply(result=res)
 
 
@@ -66,7 +66,8 @@ try:
              )
     async def get_account(account_id: int):
         resp = twitter_svc.get_account(account_id)
-        return AccountReply(result=Account(account_id=resp.account_id, name=resp.name, user_name=resp.user_name))
+        return AccountReply(
+            result=Account(user_id=resp.user_id, account_id=resp.account_id, name=resp.name, user_name=resp.user_name))
 
 
     @app.get("/update/{user_id}",
