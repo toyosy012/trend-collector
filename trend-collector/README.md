@@ -34,3 +34,13 @@ $ uvicorn server:app --reload
 ## APIリファレンス
 
 - https://127.0.0.1:8000/docs
+
+## トレンド
+
+### クエリ文字数制限
+
+- varchar(1)は1バイト
+- 日本語の常用文字である3バイト(基本多言語面: BMP)文字で30文字
+- 90バイトを限度とする
+- https://tech.sanwasystem.com/entry/2017/11/13/102531
+- https://qiita.com/aki3061/items/65a381145d83b4ee32c6

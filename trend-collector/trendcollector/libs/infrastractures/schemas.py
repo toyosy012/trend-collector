@@ -22,3 +22,20 @@ class TwitterAccountTable(Base):
                 id={self.id!r}, account_id={self.account_id!r}, name={self.name!r}, user_name={self.user_name!r}\
                 created={self.created_at!r}, updated_at={self.updated_at!r}\
             )"
+
+
+class TrendTable(Base):
+    __tablename__ = "trends"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(90))
+    query = Column(String(270))  # 3バイト文字をurlエンコードすると9バイトになるとのことで3倍を設定
+    tweet_volume = Column(Integer)
+    created_at = Column(DATETIME)
+    updated_at = Column(DATETIME)
+
+    def __repr__(self):
+        return f"TwitterAccount(\
+                id={self.id!r}, name={self.name!r}, query={self.query!r}, tweet_volume={self.tweet_volume!r}\
+                created_at={self.created_at!r}, updated_at={self.updated_at!r}\
+            )"
