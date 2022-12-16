@@ -1,7 +1,9 @@
 import logging
 
 import pymysql
-import sqlalchemy
+
+from fastapi import Depends, FastAPI
+from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.pool import QueuePool
 
 from libs.infrastractures.twitter_account_repository import TwitterAccountRepository
@@ -12,6 +14,7 @@ from libs.twitter_v2 import TwitterV2
 logger = logging.getLogger('uvicorn')
 env = Environment()
 app = FastAPI()
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 twitter_v2_cli = TwitterV2(
     env.bearer_token,
     env.consumer_key, env.consumer_secret,
@@ -49,6 +52,9 @@ try:
         res = [Account(user_id=r.user_id, account_id=r.account_id, name=r.name, user_name=r.user_name) for r in resp]
         return AccountsReply(result=res)
 
+    @app.get("/auth", response_model=Token)
+    async def auth(token: str = Depends(oauth2_scheme)) -> Token:
+        return Token(token=token)
 
     @app.get("/accounts/me",
              response_model=AccountReply,
