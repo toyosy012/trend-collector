@@ -3,7 +3,7 @@ from logging import Logger
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
-from .. import Trend, TwitterAccount
+from .. import Trend
 from ..services import TrendAccessor
 
 
@@ -16,7 +16,7 @@ class TwitterAccountRepository(TrendAccessor):
         self.session = scoped_session(sessionmaker(autocommit=True, autoflush=True, bind=self.engine))
         self.logger = logger
 
-    def get(self, _id: int) -> TwitterAccount:
+    def get(self, _id: int) -> Trend:
         pass
 
     def list(self) -> list[Trend]:
