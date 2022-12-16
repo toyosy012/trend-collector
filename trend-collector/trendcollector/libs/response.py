@@ -12,6 +12,7 @@ class Token(BaseModel):
 
 
 class Account(BaseModel):
+    user_id: int = Field(default=None, example=0)
     account_id: int = Field(default=0, example=0)
     name: str = Field(default=DISPLAY_NAME, example=DISPLAY_NAME)
     user_name: str = Field(default=USER_NAME, example=USER_NAME)
