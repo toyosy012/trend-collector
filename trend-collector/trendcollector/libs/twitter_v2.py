@@ -1,8 +1,11 @@
 import tweepy
 from logging import Logger
 from tweepy.errors import Forbidden
+from tweepy.client import Response
 from http import HTTPStatus
-from .client import Trend, Twitter, TwitterAccount, CustomException
+from .client import Twitter
+from .models import Trend, TwitterAccount
+from .services import CustomException
 
 FORBIDDEN_ACCESS = "アクセス権限がないために失敗"
 FAILED_GET_MY_ACCOUNT = "自身のアカウントの取得に失敗"
@@ -60,11 +63,11 @@ class TwitterV2(Twitter):
             self.logger.error(e)
             raise IntervalServerError(HTTPStatus.INTERNAL_SERVER_ERROR, FAILED_GET_MY_ACCOUNT, [UNEXPECTED_ERROR])
         else:
-            return TwitterAccount(resp[0]["id"], resp[0]["name"], resp[0]["username"])
+            return TwitterAccount(0, resp[0]["id"], resp[0]["name"], resp[0]["username"])
 
-    def get_account(self, account_id: int) -> TwitterAccount:
+    def get_account(self, user_id: int, account_id: int) -> TwitterAccount:
         try:
-            resp = self.client.get_user(id=account_id)
+            resp: Response = self.client.get_user(id=account_id)
         except tweepy.Unauthorized as e:
             self.logger.error(e)
             raise TwitterUnAuthorized(HTTPStatus.INTERNAL_SERVER_ERROR, FAILED_GET_MY_ACCOUNT, e.api_messages)
@@ -75,13 +78,13 @@ class TwitterV2(Twitter):
             self.logger.error(e)
             raise IntervalServerError(HTTPStatus.INTERNAL_SERVER_ERROR, FAILED_GET_MY_ACCOUNT, [UNEXPECTED_ERROR])
         else:
-            return TwitterAccount(resp[0]["id"], resp[0]["name"], resp[0]["username"])
+            return TwitterAccount(user_id, resp.data["id"], resp.data["name"], resp.data["username"])
 
-    def list_trends(self) -> list[Trend]:
+    def list_trends(self, woeid: int) -> list[Trend]:
         try:
-            resp = self.api.get_place_trends(23424856)[0]['trends']
+            resp = self.api.get_place_trends(woeid)[0]['trends']
         except Forbidden as e:
             self.logger.error(e)
             raise TwitterForbidden(HTTPStatus.INTERNAL_SERVER_ERROR, FAILED_GET_TRENDS, [FORBIDDEN_ACCESS])
         else:
-            return [Trend(name=t.name, url=t.url, query=t.query, tweet_volume=t.tweet_volume) for t in resp]
+            return [Trend(name=t["name"], query=t["query"], tweet_volume=t["tweet_volume"]) for t in resp]
