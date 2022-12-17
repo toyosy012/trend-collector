@@ -9,7 +9,7 @@ from libs import Base
 from libs.infrastractures import (Environment, TrendRepository,
                                   TwitterAccountRepository)
 from libs.infrastractures.twitter_v2 import TwitterV2
-from libs.response import *
+from libs.infrastractures.response import *
 from libs.services.collector import TwitterCollector
 from sqlalchemy.pool import QueuePool
 
