@@ -13,12 +13,6 @@ from ..models.twitter import TwitterAccount
 # https://cloud.google.com/sql/docs/mysql/manage-connections?hl=ja
 
 
-TWITTER_ACCOUNTS = "twitter_accounts"
-FAILED_FETCH_ACCOUNT = "アカウントの取得に失敗"
-FAILED_UPDATE_ACCOUNT = "アカウントの更新に失敗"
-FAILED_FETCH_ACCOUNTS = "アカウントリストの取得に失敗"
-
-
 class TwitterAccountRepository(TwitterAccountAccessor):
     engine: Engine
     logger: Logger

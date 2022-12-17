@@ -6,6 +6,12 @@ from .custom_exception import CustomException
 from ..models.twitter import Trend, TwitterAccount
 
 
+TWITTER_ACCOUNTS = "twitter_accounts"
+FAILED_FETCH_ACCOUNT = "アカウントの取得に失敗"
+FAILED_UPDATE_ACCOUNT = "アカウントの更新に失敗"
+FAILED_FETCH_ACCOUNTS = "アカウントリストの取得に失敗"
+
+
 class DetachedInstance(CustomException):
     def __init__(self, code: int, message: str, details: list[str]):
         super().__init__(code, message, details)
