@@ -6,7 +6,7 @@ from fastapi import Depends, FastAPI
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.pool import QueuePool
 
-from libs.infrastractures.twitter_account_repository import TwitterAccountRepository
+from libs.infrastractures import TrendRepository, TwitterAccountRepository
 from libs.response import *
 from libs.services.collector import TwitterCollector
 from libs.twitter_v2 import TwitterV2
@@ -40,9 +40,10 @@ engine = sqlalchemy.create_engine(
 
 
 try:
-    twitter_db_cli = TwitterAccountRepository(engine, logger)
+    trend_repo = TrendRepository(engine, logger)
+    twitter_account_repo = TwitterAccountRepository(engine, logger)
 
-    twitter_svc = TwitterCollector(twitter_db_cli, twitter_v2_cli)
+    twitter_svc = TwitterCollector(trend_repo, twitter_account_repo, twitter_v2_cli)
 
     @app.get("/accounts",
              response_model=AccountsReply,

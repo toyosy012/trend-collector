@@ -1,6 +1,6 @@
 import abc
 from typing import List
-from .accessor import TwitterAccountAccessor
+from .accessor import TwitterAccountAccessor, TrendAccessor
 from ..client import Twitter
 from ..models import Trend, TwitterAccount
 
@@ -24,11 +24,15 @@ class CollectorSvc(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def list_trends(self, woeid: int) -> list[Trend]: pass
 
+    @abc.abstractmethod
+    def upsert_trends(self, woeid: int) -> [Trend]: pass
+
 
 class TwitterCollector(CollectorSvc):
 
-    def __init__(self, db_accessor: TwitterAccountAccessor, twitter_cli: Twitter):
-        self.db_accessor = db_accessor
+    def __init__(self, trend_repo: TrendAccessor, twitter_accessor_repo: TwitterAccountAccessor, twitter_cli: Twitter):
+        self.trend_repo = trend_repo
+        self.twitter_account_repo = twitter_accessor_repo
         self.twitter_cli = twitter_cli
 
     def get_me(self) -> TwitterAccount:
@@ -36,18 +40,22 @@ class TwitterCollector(CollectorSvc):
 
     def update_me(self) -> TwitterAccount:
         my_account = self.get_me()
-        return self.db_accessor.update_account(my_account)
+        return self.twitter_account_repo.update_account(my_account)
 
     def list_accounts(self) -> List[TwitterAccount]:
-        return self.db_accessor.list_accounts()
+        return self.twitter_account_repo.list_accounts()
 
     def get_account(self, user_id: int) -> TwitterAccount:
-        return self.db_accessor.get_account(user_id)
+        return self.twitter_account_repo.get_account(user_id)
 
     def update_account(self, user_id: int) -> TwitterAccount:
-        old = self.db_accessor.get_account(user_id)
+        old = self.twitter_account_repo.get_account(user_id)
         account = self.twitter_cli.get_account(user_id, old.account_id)
-        return self.db_accessor.update_account(account)
+        return self.twitter_account_repo.update_account(account)
 
     def list_trends(self, woeid: int) -> list[Trend]:
         return self.twitter_cli.list_trends(woeid)
+
+    def upsert_trends(self, woeid: int) -> bool:
+        trends = self.list_trends(woeid)
+        return self.trend_repo.upsert(trends)
