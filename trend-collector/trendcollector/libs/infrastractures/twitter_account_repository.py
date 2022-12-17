@@ -1,14 +1,14 @@
-import sqlalchemy
-
 from http import HTTPStatus
 from logging import Logger
+
+import sqlalchemy
 from sqlalchemy.engine.base import Engine
-from sqlalchemy.orm import sessionmaker, scoped_session, Session
+from sqlalchemy.orm import Session, scoped_session, sessionmaker
 from sqlalchemy.orm.exc import DetachedInstanceError
 
-from .schemas import TwitterAccountTable
-from ..services import *
 from ..models.twitter import TwitterAccount
+from ..services import *
+from .schemas import TwitterAccountTable
 
 # https://cloud.google.com/sql/docs/mysql/manage-connections?hl=ja
 
