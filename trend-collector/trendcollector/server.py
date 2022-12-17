@@ -5,6 +5,7 @@ import pymysql
 from fastapi import Depends, FastAPI
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.pool import QueuePool
+from typing import Union
 
 from libs import Base
 from libs.infrastractures import TrendRepository, TwitterAccountRepository
@@ -93,6 +94,14 @@ try:
     async def collect_current_trends(woeid: int):
         resp = twitter_svc.upsert_trends(woeid)
         return UpsertTrends(success=resp)
+
+    @app.get("/trends", response_model=TwitterTrendsReply)
+    async def list_trend(page: Union[int, None] = 1, counts: Union[int, None] = 20):
+        resp = twitter_svc.list_trends(page, counts)
+        return TwitterTrendsReply(
+            result=[TwitterTrend(id=t.id, name=t.name, query=t.query, tweet_volume=t.tweet_volume) for t in resp],
+            length=len(resp)
+        )
 
     @app.delete("/trends/{_id}", response_model=DeleteTrends)
     async def delete_trend(_id: int):
