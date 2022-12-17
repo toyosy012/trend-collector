@@ -1,11 +1,12 @@
 import tweepy
+
 from logging import Logger
 from tweepy.errors import Forbidden
 from tweepy.client import Response
 from http import HTTPStatus
-from .client import Twitter
-from .models import TwitterAccount, WoeidRawTrend
-from .services import CustomException
+
+from ..models import TwitterAccount, WoeidRawTrend
+from ..services import CustomException, client
 
 FORBIDDEN_ACCESS = "アクセス権限がないために失敗"
 FAILED_GET_MY_ACCOUNT = "自身のアカウントの取得に失敗"
@@ -29,7 +30,7 @@ class IntervalServerError(CustomException):
         super().__init__(code, message, details)
 
 
-class TwitterV2(Twitter):
+class TwitterV2(client.Twitter):
     api: tweepy.API
     client: tweepy.Client
     logger: Logger
