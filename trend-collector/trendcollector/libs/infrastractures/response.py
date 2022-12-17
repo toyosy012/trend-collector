@@ -5,8 +5,8 @@ from pydantic import BaseModel, Field
 from starlette.middleware.base import (BaseHTTPMiddleware,
                                        RequestResponseEndpoint)
 
-from .infrastractures.conf import *
-from .services import CustomException
+from ..infrastractures.conf import *
+from ..services import CustomException
 
 
 class Token(BaseModel):
