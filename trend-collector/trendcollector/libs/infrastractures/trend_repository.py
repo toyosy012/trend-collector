@@ -73,6 +73,7 @@ class TrendRepository(TrendAccessor):
             session.commit()
             return True
         except Exception as e:
+            self.logger.error(e)
             session.rollback()
             raise e
         finally:
