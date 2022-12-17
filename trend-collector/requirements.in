@@ -4,3 +4,4 @@ tweepy
 pydantic
 SQLAlchemy
 PyMySQL
+isort

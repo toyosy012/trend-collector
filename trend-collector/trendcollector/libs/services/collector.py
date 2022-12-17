@@ -1,8 +1,8 @@
 import abc
 
-from .accessor import TwitterAccountAccessor, TrendAccessor
-from ..client import Twitter
 from ..models import Trend, TwitterAccount, WoeidRawTrend
+from ..services.client import Twitter
+from .accessor import TrendAccessor, TwitterAccountAccessor
 
 
 class CollectorSvc(metaclass=abc.ABCMeta):
