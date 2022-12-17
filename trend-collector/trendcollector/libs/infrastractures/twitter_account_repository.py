@@ -5,10 +5,9 @@ from logging import Logger
 from sqlalchemy.engine.base import Engine
 from sqlalchemy.orm import sessionmaker, scoped_session, Session
 from sqlalchemy.orm.exc import DetachedInstanceError
-from typing import List
 
 from .schemas import TwitterAccountTable
-from ..services import CustomException, TwitterAccountAccessor
+from ..services import *
 from ..models.twitter import TwitterAccount
 
 # https://cloud.google.com/sql/docs/mysql/manage-connections?hl=ja
@@ -18,21 +17,6 @@ TWITTER_ACCOUNTS = "twitter_accounts"
 FAILED_FETCH_ACCOUNT = "アカウントの取得に失敗"
 FAILED_UPDATE_ACCOUNT = "アカウントの更新に失敗"
 FAILED_FETCH_ACCOUNTS = "アカウントリストの取得に失敗"
-
-
-class DetachedInstance(CustomException):
-    def __init__(self, code: int, message: str, details: list[str]):
-        super().__init__(code, message, details)
-
-
-class OperationalException(CustomException):
-    def __init__(self, code: int, message: str, details: list[str]):
-        super().__init__(code, message, details)
-
-
-class RuntimeException(CustomException):
-    def __init__(self, code: int, message: str, details: list[str]):
-        super().__init__(code, message, details)
 
 
 class TwitterAccountRepository(TwitterAccountAccessor):

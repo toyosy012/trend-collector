@@ -1,7 +1,24 @@
 import abc
+
 from typing import List
+
+from .custom_exception import CustomException
 from ..models.twitter import Trend, TwitterAccount
 
+
+class DetachedInstance(CustomException):
+    def __init__(self, code: int, message: str, details: list[str]):
+        super().__init__(code, message, details)
+
+
+class OperationalException(CustomException):
+    def __init__(self, code: int, message: str, details: list[str]):
+        super().__init__(code, message, details)
+
+
+class RuntimeException(CustomException):
+    def __init__(self, code: int, message: str, details: list[str]):
+        super().__init__(code, message, details)
 
 class TwitterAccountAccessor(metaclass=abc.ABCMeta):
     @abc.abstractmethod
