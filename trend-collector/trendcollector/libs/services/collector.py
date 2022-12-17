@@ -13,7 +13,7 @@ class CollectorSvc(metaclass=abc.ABCMeta):
     def update_me(self) -> TwitterAccount: pass
 
     @abc.abstractmethod
-    def list_accounts(self) -> [TwitterAccount]: pass
+    def list_accounts(self) -> list[TwitterAccount]: pass
 
     @abc.abstractmethod
     def get_account(self, account_id: int) -> TwitterAccount: pass
@@ -48,7 +48,7 @@ class TwitterCollector(CollectorSvc):
         my_account = self.get_me()
         return self.twitter_account_repo.update_account(my_account)
 
-    def list_accounts(self) -> [TwitterAccount]:
+    def list_accounts(self) -> list[TwitterAccount]:
         return self.twitter_account_repo.list_accounts()
 
     def get_account(self, user_id: int) -> TwitterAccount:
