@@ -1,5 +1,5 @@
 import abc
-from typing import List
+
 from .accessor import TwitterAccountAccessor, TrendAccessor
 from ..client import Twitter
 from ..models import Trend, TwitterAccount
@@ -13,7 +13,7 @@ class CollectorSvc(metaclass=abc.ABCMeta):
     def update_me(self) -> TwitterAccount: pass
 
     @abc.abstractmethod
-    def list_accounts(self) -> List[TwitterAccount]: pass
+    def list_accounts(self) -> [TwitterAccount]: pass
 
     @abc.abstractmethod
     def get_account(self, account_id: int) -> TwitterAccount: pass
@@ -25,7 +25,7 @@ class CollectorSvc(metaclass=abc.ABCMeta):
     def get_trend(self, _id: int) -> Trend: pass
 
     @abc.abstractmethod
-    def list_trends(self, woeid: int) -> list[Trend]: pass
+    def list_trends(self, woeid: int) -> [Trend]: pass
 
     @abc.abstractmethod
     def upsert_trends(self, woeid: int) -> [Trend]: pass
@@ -48,7 +48,7 @@ class TwitterCollector(CollectorSvc):
         my_account = self.get_me()
         return self.twitter_account_repo.update_account(my_account)
 
-    def list_accounts(self) -> List[TwitterAccount]:
+    def list_accounts(self) -> [TwitterAccount]:
         return self.twitter_account_repo.list_accounts()
 
     def get_account(self, user_id: int) -> TwitterAccount:
@@ -59,11 +59,11 @@ class TwitterCollector(CollectorSvc):
         account = self.twitter_cli.get_account(user_id, old.account_id)
         return self.twitter_account_repo.update_account(account)
 
+    def list_trends(self, woeid: int) -> [Trend]:
+        return self.twitter_cli.list_trends(woeid)
+
     def get_trend(self, _id: int) -> Trend:
         return self.trend_repo.get(_id)
-
-    def list_trends(self, woeid: int) -> list[Trend]:
-        return self.twitter_cli.list_trends(woeid)
 
     def upsert_trends(self, woeid: int) -> bool:
         trends = self.list_trends(woeid)
