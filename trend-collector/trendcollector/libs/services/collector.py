@@ -25,7 +25,7 @@ class CollectorSvc(metaclass=abc.ABCMeta):
     def get_trend(self, _id: int) -> Trend: pass
 
     @abc.abstractmethod
-    def list_trends(self, woeid: int) -> [Trend]: pass
+    def list_trends(self, page: int, counts: int) -> list[Trend]: pass
 
     @abc.abstractmethod
     def upsert_trends(self, woeid: int) -> [Trend]: pass
@@ -59,11 +59,11 @@ class TwitterCollector(CollectorSvc):
         account = self.twitter_cli.get_account(user_id, old.account_id)
         return self.twitter_account_repo.update_account(account)
 
-    def list_trends(self, woeid: int) -> [Trend]:
-        return self.twitter_cli.list_trends(woeid)
-
     def get_trend(self, _id: int) -> Trend:
         return self.trend_repo.get(_id)
+
+    def list_trends(self, page: int, counts: int) -> list[Trend]:
+        return self.trend_repo.list(page, counts)
 
     def upsert_trends(self, woeid: int) -> bool:
         trends = self.list_trends(woeid)
