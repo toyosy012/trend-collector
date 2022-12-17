@@ -24,6 +24,10 @@ class TwitterTrend(BaseModel):
     tweet_volume: int = Field(None, example=1000)
 
 
+class UpsertTrends(BaseModel):
+    success: bool = Field(None, example=True)
+
+
 class ErrorReply(BaseModel):
     message: str = Field(None, example="エラーが発生しました")
     details: list[str] = Field(None, example=["エラー原因を列挙"])
