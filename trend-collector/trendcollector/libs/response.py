@@ -3,7 +3,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from pydantic import BaseModel, Field
-from .conf import *
+from .infrastractures.conf import *
 from .services import CustomException
 
 

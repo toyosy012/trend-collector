@@ -8,7 +8,7 @@ from sqlalchemy.pool import QueuePool
 from typing import Union
 
 from libs import Base
-from libs.infrastractures import TrendRepository, TwitterAccountRepository
+from libs.infrastractures import Environment, TrendRepository, TwitterAccountRepository
 from libs.infrastractures.twitter_v2 import TwitterV2
 from libs.response import *
 from libs.services.collector import TwitterCollector
