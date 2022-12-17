@@ -6,6 +6,7 @@ from fastapi import Depends, FastAPI
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.pool import QueuePool
 
+from libs import Base
 from libs.infrastractures import TrendRepository, TwitterAccountRepository
 from libs.response import *
 from libs.services.collector import TwitterCollector
@@ -37,6 +38,8 @@ engine = sqlalchemy.create_engine(
     pool_size=10,
     max_overflow=20
 )
+
+Base.metadata.create_all(engine)
 
 
 try:
