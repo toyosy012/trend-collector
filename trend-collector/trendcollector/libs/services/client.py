@@ -1,6 +1,6 @@
 import abc
 
-from .models import TwitterAccount, WoeidRawTrend
+from ..models import TwitterAccount, WoeidRawTrend
 
 
 class Twitter(metaclass=abc.ABCMeta):
