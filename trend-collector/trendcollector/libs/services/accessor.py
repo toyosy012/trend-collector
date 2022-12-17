@@ -1,10 +1,8 @@
 import abc
-
 from typing import List
 
-from .custom_exception import CustomException
 from ..models.twitter import Trend, TwitterAccount, WoeidRawTrend
-
+from .custom_exception import CustomException
 
 TWITTER_ACCOUNTS = "twitter_accounts"
 FAILED_FETCH_ACCOUNT = "アカウントの取得に失敗"

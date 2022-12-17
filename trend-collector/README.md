@@ -22,6 +22,12 @@ requirements.txt
 
 # パッケージインストール
 $ pip-sync
+
+# モジュールのimportパスソート
+$ isort server.py
+
+# ディレクトリ単位のimportパスソート
+$ isort -rc terndcollector
 ```
 
 ## APIの実行

@@ -1,9 +1,9 @@
-import tweepy
-
-from logging import Logger
-from tweepy.errors import Forbidden
-from tweepy.client import Response
 from http import HTTPStatus
+from logging import Logger
+
+import tweepy
+from tweepy.client import Response
+from tweepy.errors import Forbidden
 
 from ..models import TwitterAccount, WoeidRawTrend
 from ..services import CustomException, client

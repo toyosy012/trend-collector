@@ -1,11 +1,12 @@
 from fastapi import Request, Response
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
-from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from pydantic import BaseModel, Field
+from starlette.middleware.base import (BaseHTTPMiddleware,
+                                       RequestResponseEndpoint)
 
-from ..infrastractures.conf import DISPLAY_NAME, USER_NAME, TREND_NAME, TREND_QUERY
-from ..services import CustomException
+from .infrastractures.conf import *
+from .services import CustomException
 
 
 class Token(BaseModel):

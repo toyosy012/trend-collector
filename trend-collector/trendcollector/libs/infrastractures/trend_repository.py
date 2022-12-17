@@ -1,17 +1,18 @@
 import functools
-
 from http import HTTPStatus
 from logging import Logger
-from sqlalchemy.dialects import mysql
-from sqlalchemy.exc import OperationalError as SQLAlchemyOperationalError
-from sqlalchemy.exc import InvalidRequestError
-from sqlalchemy.engine import Engine
-from sqlalchemy.orm import scoped_session, sessionmaker, Session
 from typing import List
 
-from .schemas import TrendTable
+from sqlalchemy.dialects import mysql
+from sqlalchemy.engine import Engine
+from sqlalchemy.exc import InvalidRequestError
+from sqlalchemy.exc import OperationalError as SQLAlchemyOperationalError
+from sqlalchemy.orm import Session, scoped_session, sessionmaker
+
 from ..models import Trend, WoeidRawTrend
-from ..services.accessor import InvalidRequestException, TrendAccessor, OperationalException, FAILED_FETCH_TRENDS
+from ..services.accessor import (FAILED_FETCH_TRENDS, InvalidRequestException,
+                                 OperationalException, TrendAccessor)
+from .schemas import TrendTable
 
 
 # コールバック関数の引数(*args, **kwargs)をCallableで表現することは不可能なので型ヒントは書かない
