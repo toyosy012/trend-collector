@@ -44,7 +44,7 @@ class TwitterAccountAccessor(metaclass=abc.ABCMeta):
 
 class TrendAccessor(metaclass=abc.ABCMeta):
     @abc.abstractmethod
-    def list(self) -> [Trend]: pass
+    def list(self, page: int, counts: int) -> [Trend]: pass
 
     @abc.abstractmethod
     def get(self, _id: int) -> Trend: pass

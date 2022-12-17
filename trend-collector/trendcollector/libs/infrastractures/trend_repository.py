@@ -41,7 +41,6 @@ class TrendRepository(TrendAccessor):
         session = self.session_factory()
         try:
             record: TrendTable = session.query(TrendTable).filter(TrendTable.id == _id).first()
-            print(record)
             return Trend(_id=record.id, name=record.name, query=record.query, tweet_volume=record.tweet_volume)
         except Exception as e:
             self.logger.error(e)
@@ -50,8 +49,15 @@ class TrendRepository(TrendAccessor):
             session.close()
 
     @handle_exception
-    def list(self) -> [Trend]:
-        pass
+    def list(self, page: int, counts: int) -> list[Trend]:
+        session: Session = self.session_factory()
+        try:
+            resp = session.query(TrendTable).offset((page - 1) * counts).limit(counts).all()
+            return [Trend(_id=t.id, name=t.name, query=t.query, tweet_volume=t.tweet_volume) for t in resp]
+        except Exception as e:
+            raise e
+        finally:
+            session.close()
 
     @handle_exception
     def upsert(self, trends: [Trend]) -> bool:
