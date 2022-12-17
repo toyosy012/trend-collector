@@ -2,7 +2,7 @@ import abc
 
 from .accessor import TwitterAccountAccessor, TrendAccessor
 from ..client import Twitter
-from ..models import Trend, TwitterAccount
+from ..models import Trend, TwitterAccount, WoeidRawTrend
 
 
 class CollectorSvc(metaclass=abc.ABCMeta):
@@ -28,7 +28,7 @@ class CollectorSvc(metaclass=abc.ABCMeta):
     def list_trends(self, page: int, counts: int) -> list[Trend]: pass
 
     @abc.abstractmethod
-    def upsert_trends(self, woeid: int) -> [Trend]: pass
+    def upsert_trends(self, woeid: int) -> list[Trend]: pass
 
     @abc.abstractmethod
     def delete_trend(self, trend: Trend) -> bool: pass
@@ -66,7 +66,7 @@ class TwitterCollector(CollectorSvc):
         return self.trend_repo.list(page, counts)
 
     def upsert_trends(self, woeid: int) -> bool:
-        trends = self.list_trends(woeid)
+        trends: list[WoeidRawTrend] = self.twitter_cli.list_trends(woeid)
         return self.trend_repo.upsert(trends)
 
     def delete_trend(self, _id: int) -> bool:

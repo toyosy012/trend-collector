@@ -4,7 +4,7 @@ from tweepy.errors import Forbidden
 from tweepy.client import Response
 from http import HTTPStatus
 from .client import Twitter
-from .models import Trend, TwitterAccount
+from .models import TwitterAccount, WoeidRawTrend
 from .services import CustomException
 
 FORBIDDEN_ACCESS = "アクセス権限がないために失敗"
@@ -80,11 +80,11 @@ class TwitterV2(Twitter):
         else:
             return TwitterAccount(user_id, resp.data["id"], resp.data["name"], resp.data["username"])
 
-    def list_trends(self, woeid: int) -> list[Trend]:
+    def list_trends(self, woeid: int) -> list[WoeidRawTrend]:
         try:
             resp = self.api.get_place_trends(woeid)[0]['trends']
         except Forbidden as e:
             self.logger.error(e)
             raise TwitterForbidden(HTTPStatus.INTERNAL_SERVER_ERROR, FAILED_GET_TRENDS, [FORBIDDEN_ACCESS])
         else:
-            return [Trend(name=t["name"], query=t["query"], tweet_volume=t["tweet_volume"]) for t in resp]
+            return [WoeidRawTrend(name=t["name"], query=t["query"], tweet_volume=t["tweet_volume"]) for t in resp]

@@ -50,7 +50,7 @@ class TrendAccessor(metaclass=abc.ABCMeta):
     def get(self, _id: int) -> Trend: pass
 
     @abc.abstractmethod
-    def upsert(self, trends: [Trend]) -> bool: pass
+    def upsert(self, trends: List[WoeidRawTrend]) -> bool: pass
 
     @abc.abstractmethod
     def delete(self, _id: int) -> bool: pass

@@ -1,6 +1,6 @@
 import abc
 
-from .models import Trend, TwitterAccount
+from .models import TwitterAccount, WoeidRawTrend
 
 
 class Twitter(metaclass=abc.ABCMeta):
@@ -11,5 +11,5 @@ class Twitter(metaclass=abc.ABCMeta):
     def get_account(self, user_id: int, account_id: int) -> TwitterAccount: pass
 
     @abc.abstractmethod
-    def list_trends(self, woeid: int) -> [Trend]: pass
+    def list_trends(self, woeid: int) -> list[WoeidRawTrend]: pass
 

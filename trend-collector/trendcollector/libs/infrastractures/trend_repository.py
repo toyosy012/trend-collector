@@ -7,9 +7,10 @@ from sqlalchemy.exc import OperationalError as SQLAlchemyOperationalError
 from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import scoped_session, sessionmaker, Session
+from typing import List
 
 from .schemas import TrendTable
-from ..models import Trend
+from ..models import Trend, WoeidRawTrend
 from ..services.accessor import InvalidRequestException, TrendAccessor, OperationalException, FAILED_FETCH_TRENDS
 
 
@@ -60,7 +61,7 @@ class TrendRepository(TrendAccessor):
             session.close()
 
     @handle_exception
-    def upsert(self, trends: [Trend]) -> bool:
+    def upsert(self, trends: List[WoeidRawTrend]) -> bool:
         insert_stmt = mysql.insert(TrendTable).values([
             dict(
                 name=t.name,
