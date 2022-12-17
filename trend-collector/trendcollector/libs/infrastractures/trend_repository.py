@@ -41,11 +41,11 @@ class TrendRepository(TrendAccessor):
         pass
 
     @handle_exception
-    def list(self) -> list[Trend]:
+    def list(self) -> [Trend]:
         pass
 
     @handle_exception
-    def upsert(self, trends: [Trend]) -> [Trend]:
+    def upsert(self, trends: [Trend]) -> bool:
         insert_stmt = mysql.insert(TrendTable).values([
             dict(
                 name=t.name,
