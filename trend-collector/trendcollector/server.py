@@ -95,6 +95,11 @@ try:
         resp = twitter_svc.upsert_trends(woeid)
         return UpsertTrends(success=resp)
 
+    @app.get("/trends/{_id}", response_model=TwitterTrend)
+    async def get_trend(_id: int):
+        resp = twitter_svc.get_trend(_id)
+        return TwitterTrend(id=resp.id, name=resp.name, query=resp.query, tweet_volume=resp.tweet_volume)
+
     @app.get("/trends", response_model=TwitterTrendsReply)
     async def list_trend(page: Union[int, None] = 1, counts: Union[int, None] = 20):
         resp = twitter_svc.list_trends(page, counts)
