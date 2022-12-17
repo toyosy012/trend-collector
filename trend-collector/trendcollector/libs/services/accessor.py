@@ -1,7 +1,7 @@
 import abc
 
 from .custom_exception import CustomException
-from ..models.twitter import Trend, TwitterAccount
+from ..models.twitter import Trend, TwitterAccount, WoeidRawTrend
 
 
 TWITTER_ACCOUNTS = "twitter_accounts"
