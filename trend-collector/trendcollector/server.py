@@ -42,7 +42,6 @@ engine = sqlalchemy.create_engine(
 
 Base.metadata.create_all(engine)
 
-
 try:
     trend_repo = TrendRepository(engine, logger)
     twitter_account_repo = TwitterAccountRepository(engine, logger)
@@ -70,7 +69,6 @@ try:
         return AccountReply(
             result=Account(user_id=resp.user_id, account_id=resp.account_id, name=resp.name, user_name=resp.user_name))
 
-
     @app.get("/accounts/{account_id}",
              response_model=AccountReply,
              responses={401: {"model": ErrorReply}, 500: {"model": ErrorReply}}
@@ -79,7 +77,6 @@ try:
         resp = twitter_svc.get_account(account_id)
         return AccountReply(
             result=Account(user_id=resp.user_id, account_id=resp.account_id, name=resp.name, user_name=resp.user_name))
-
 
     @app.get("/update/{user_id}",
              response_model=AccountReply,
