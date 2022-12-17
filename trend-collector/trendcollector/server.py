@@ -94,6 +94,11 @@ try:
         resp = twitter_svc.upsert_trends(woeid)
         return UpsertTrends(success=resp)
 
+    @app.delete("/trends/{_id}", response_model=DeleteTrends)
+    async def delete_trend(_id: int):
+        resp = twitter_svc.delete_trend(_id)
+        return DeleteTrends(success=resp)
+
     app.add_middleware(HttpErrorMiddleware)
 
 # DBコネクションの切断などで切れた場合に捕捉するコード

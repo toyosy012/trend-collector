@@ -28,6 +28,10 @@ class UpsertTrends(BaseModel):
     success: bool = Field(None, example=True)
 
 
+class DeleteTrends(BaseModel):
+    success: bool = Field(None, example=True)
+
+
 class ErrorReply(BaseModel):
     message: str = Field(None, example="エラーが発生しました")
     details: list[str] = Field(None, example=["エラー原因を列挙"])
