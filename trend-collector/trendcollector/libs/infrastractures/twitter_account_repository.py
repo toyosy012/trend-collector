@@ -22,7 +22,7 @@ class TwitterAccountRepository(TwitterAccountAccessor):
         self.session = scoped_session(sessionmaker(autocommit=True, autoflush=True, bind=self.engine))
         self.logger = logger
 
-    def list_accounts(self) -> List[TwitterAccount]:
+    def list_accounts(self) -> [TwitterAccount]:
         session: Session = self.session()
         try:
             rows = session.query(TwitterAccountTable).all()
