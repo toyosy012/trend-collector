@@ -38,7 +38,16 @@ class TrendRepository(TrendAccessor):
 
     @handle_exception
     def get(self, _id: int) -> Trend:
-        pass
+        session = self.session_factory()
+        try:
+            record: TrendTable = session.query(TrendTable).filter(TrendTable.id == _id).first()
+            print(record)
+            return Trend(_id=record.id, name=record.name, query=record.query, tweet_volume=record.tweet_volume)
+        except Exception as e:
+            self.logger.error(e)
+            raise e
+        finally:
+            session.close()
 
     @handle_exception
     def list(self) -> [Trend]:
@@ -70,5 +79,15 @@ class TrendRepository(TrendAccessor):
             session.close()
 
     @handle_exception
-    def delete(self, _id: int) -> bool:
-        pass
+    def delete(self, _id: Trend) -> bool:
+        session: Session = self.session_factory()
+        try:
+            session.query(TrendTable).filter(TrendTable.id == _id).delete()
+            session.commit()
+            return True
+        except Exception as e:
+            self.logger.error(e)
+            session.rollback()
+            raise e
+        finally:
+            session.close()
