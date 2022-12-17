@@ -1,4 +1,7 @@
-from sqlalchemy import Column, DATETIME, Integer, String
+from sqlalchemy import Column, DATETIME, String
+from sqlalchemy.dialects.mysql import INTEGER as Integer
+from sqlalchemy.sql.functions import current_timestamp
+from sqlalchemy.sql.expression import text
 from sqlalchemy.ext.declarative import declarative_base
 
 
@@ -27,12 +30,12 @@ class TwitterAccountTable(Base):
 class TrendTable(Base):
     __tablename__ = "trends"
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String(90))
-    query = Column(String(270))  # 3バイト文字をurlエンコードすると9バイトになるとのことで3倍を設定
-    tweet_volume = Column(Integer)
-    created_at = Column(DATETIME)
-    updated_at = Column(DATETIME)
+    id = Column(Integer(unsigned=True), primary_key=True, unique=True, nullable=False)
+    name = Column(String(90), nullable=False)
+    query = Column(String(270), nullable=False)  # 3バイト文字をurlエンコードすると9バイトになるとのことで3倍を設定
+    tweet_volume = Column(Integer(unsigned=True), nullable=False)
+    created_at = Column(DATETIME, nullable=False, server_default=current_timestamp())
+    updated_at = Column(DATETIME, nullable=False, server_default=text('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'))
 
     def __repr__(self):
         return f"TwitterAccount(\
