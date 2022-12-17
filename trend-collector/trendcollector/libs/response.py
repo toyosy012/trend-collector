@@ -19,6 +19,7 @@ class Account(BaseModel):
 
 
 class TwitterTrend(BaseModel):
+    id: int = Field(None, example=0)
     name: str = Field(None, example=TREND_NAME)
     query: str = Field(None, example=TREND_QUERY)
     tweet_volume: int = Field(None, example=1000)
@@ -47,7 +48,8 @@ class AccountsReply(BaseModel):
 
 class TwitterTrendsReply(BaseModel):
     result: list[TwitterTrend] = Field(
-        None, title="Trends", example=[TwitterTrend(neme=TREND_NAME, query=TREND_QUERY, tweet_volume=0)])
+        None, title="Trends", example=[TwitterTrend(id=0, name=TREND_NAME, query=TREND_QUERY, tweet_volume=0)])
+    length: int = Field(None, title="Length", example=1)
 
 
 class HttpErrorMiddleware(BaseHTTPMiddleware):
