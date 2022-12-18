@@ -1,17 +1,16 @@
 import logging
 from typing import Union
 
-import pymysql
 import sqlalchemy
 from fastapi import Depends, FastAPI
 from fastapi.security import OAuth2PasswordBearer
-from libs import Base
-from libs.infrastractures import (Environment, TrendRepository,
-                                  TwitterAccountRepository)
-from libs.infrastractures.twitter_v2 import TwitterV2
-from libs.infrastractures.response import *
-from libs.services.collector import TwitterCollector
 from sqlalchemy.pool import QueuePool
+
+from libs.infrastractures.repositories.schemas import Base
+from libs.infrastractures import TrendRepository, TwitterAccountRepository
+from libs.infrastractures.response import *
+from libs.infrastractures.client.twitter_v2 import TwitterV2
+from libs.services.collector import TwitterCollector
 
 logger = logging.getLogger('uvicorn')
 env = Environment()
@@ -24,36 +23,35 @@ twitter_v2_cli = TwitterV2(
     logger
 )
 
-engine = sqlalchemy.create_engine(
-    # mysql+pymysql://<db_user>:<db_pass>@<db_host>:<db_port>/<db_name>
-    sqlalchemy.engine.url.URL.create(
-        drivername="mysql+pymysql",
-        username=env.db_user,
-        password=env.db_pass,
-        database=env.db_name,
-        host=env.host,
-        port=env.port,
-    ),
-    # 複数のリポジトリで使い回すので多めにコネクションをプールできるようにする
-    poolclass=QueuePool,
-    pool_size=10,
-    max_overflow=20
-)
-
-Base.metadata.create_all(engine)
 
 try:
+    engine = sqlalchemy.create_engine(
+        # mysql+pymysql://<db_user>:<db_pass>@<db_host>:<db_port>/<db_name>
+        sqlalchemy.engine.url.URL.create(
+            drivername="mysql+pymysql",
+            username=env.db_user,
+            password=env.db_pass,
+            database=env.db_name,
+            host=env.host,
+            port=env.port,
+        ),
+        # 複数のリポジトリで使い回すので多めにコネクションをプールできるようにする
+        poolclass=QueuePool,
+        pool_size=10,
+        max_overflow=20
+    )
+
+    Base.metadata.create_all(engine)
+
     trend_repo = TrendRepository(engine, logger)
     twitter_account_repo = TwitterAccountRepository(engine, logger)
 
     twitter_svc = TwitterCollector(trend_repo, twitter_account_repo, twitter_v2_cli)
 
-    @app.get("/accounts",
-             response_model=AccountsReply,
-             )
+    @app.get("/accounts", response_model=AccountsReply)
     async def list_accounts():
         resp = twitter_svc.list_accounts()
-        res = [Account(user_id=r.user_id, account_id=r.account_id, name=r.name, user_name=r.user_name) for r in resp]
+        res = [Account(id=r.id, account_id=r.account_id, name=r.name, user_name=r.display_name) for r in resp]
         return AccountsReply(result=res)
 
     @app.get("/auth", response_model=Token)
@@ -67,16 +65,16 @@ try:
     async def get_my_account():
         resp = twitter_v2_cli.get_me()
         return AccountReply(
-            result=Account(user_id=resp.user_id, account_id=resp.account_id, name=resp.name, user_name=resp.user_name))
+            result=Account(id=resp.id, account_id=resp.account_id, name=resp.name, user_name=resp.display_name))
 
-    @app.get("/accounts/{account_id}",
+    @app.get("/accounts/{_id}",
              response_model=AccountReply,
-             responses={401: {"model": ErrorReply}, 500: {"model": ErrorReply}}
+             responses={401: {"model": ErrorReply}, 404: {"model": ErrorReply}, 500: {"model": ErrorReply}}
              )
-    async def get_account(account_id: int):
-        resp = twitter_svc.get_account(account_id)
+    async def get_account(_id: int):
+        resp = twitter_svc.get_account(_id)
         return AccountReply(
-            result=Account(user_id=resp.user_id, account_id=resp.account_id, name=resp.name, user_name=resp.user_name))
+            result=Account(id=resp.id, account_id=resp.account_id, name=resp.name, user_name=resp.display_name))
 
     @app.get("/update/{user_id}",
              response_model=AccountReply,
@@ -85,7 +83,7 @@ try:
     async def update_account(user_id: int):
         resp = twitter_svc.update_account(user_id)
         return AccountReply(
-            result=Account(user_id=resp.user_id, account_id=resp.account_id, name=resp.name, user_name=resp.user_name))
+            result=Account(id=resp.id, account_id=resp.account_id, name=resp.name, user_name=resp.display_name))
 
     @app.get("/update/trends/{woeid}", response_model=UpsertTrends, responses={500: {"model": ErrorReply}})
     async def collect_current_trends(woeid: int):
@@ -118,5 +116,5 @@ except ConnectionRefusedError as e:
     logging.fatal(e)
 except sqlalchemy.exc.OperationalError as e:
     logging.fatal(e)
-except pymysql.err.OperationalError as e:
+except RuntimeError as e:
     logging.fatal(e)
