@@ -43,14 +43,14 @@ class ErrorReply(BaseModel):
 class AccountReply(BaseModel):
     result: Account = Field(
         None, title="Account",
-        example=Account(id=1, account_id=1000000000000000, name="toyosy012", display_name="toyosy012")
+        example=Account(id=1, account_id=TWITTER_ACCOUNT_ID, name=USER_NAME, display_name=DISPLAY_NAME)
     )
 
 
 class AccountsReply(BaseModel):
     result: list[Account] = Field(
         None, title="Account",
-        example=[Account(id=1, account_id=1000000000000000, name="toyosy012", display_name="toyosy012")]
+        example=[Account(id=1, account_id=TWITTER_ACCOUNT_ID, name=USER_NAME, display_name=DISPLAY_NAME)]
     )
 
 
