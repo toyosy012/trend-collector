@@ -1,5 +1,6 @@
 from pydantic import BaseSettings, validator
 
+TWITTER_ACCOUNT_ID = 1000000000000000
 DISPLAY_NAME = "toyosy012"
 USER_NAME = "toyosy012"
 TREND_NAME = "ばあちゃん卒業"
