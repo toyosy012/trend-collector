@@ -29,7 +29,7 @@ class TwitterAccountRepository(TwitterAccountAccessor):
         finally:
             session.close()
         return [
-            TwitterAccount(user_id=r.id, account_id=r.account_id, name=r.name, user_name=r.user_name) for r in rows
+            TwitterAccount(_id=r.id, account_id=r.account_id, name=r.name, display_name=r.display_name) for r in rows
         ]
 
     @handle_exception
@@ -40,21 +40,20 @@ class TwitterAccountRepository(TwitterAccountAccessor):
             record.name = new.name
             record.user_name = new.user_name
             session.add(record)
-            n: TwitterAccount = self.get_account(new.user_id)
+            n: TwitterAccount = self.get_account(new.id)
         except Exception as e:
             session.rollback()
             raise e
         finally:
             session.close()
-        return TwitterAccount(n.user_id, n.account_id, n.name, n.user_name)
+        return TwitterAccount(n.id, n.account_id, n.name, n.display_name)
 
     @handle_exception
-    def get_account(self, user_id: int) -> TwitterAccount:
+    def get_account(self, _id: int) -> TwitterAccount:
         session: Session = self.session()
         try:
-            record = session.query(TwitterAccountTable).filter(TwitterAccountTable.id == user_id).first()
-
-            return TwitterAccount(record.id, record.account_id, record.name, record.user_name)
+            record = session.query(TwitterAccountTable).filter(TwitterAccountTable.id == _id).first()
+            return TwitterAccount(record.id, record.account_id, record.name, record.display_name)
         except Exception as e:
             raise e
         finally:

@@ -5,6 +5,7 @@ import sqlalchemy
 from fastapi import Depends, FastAPI
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.pool import QueuePool
+
 from libs.infrastractures.repositories.schemas import Base
 from libs.infrastractures import TrendRepository, TwitterAccountRepository
 from libs.infrastractures.response import *
@@ -50,7 +51,7 @@ try:
     @app.get("/accounts", response_model=AccountsReply)
     async def list_accounts():
         resp = twitter_svc.list_accounts()
-        res = [Account(user_id=r.user_id, account_id=r.account_id, name=r.name, user_name=r.user_name) for r in resp]
+        res = [Account(id=r.id, account_id=r.account_id, name=r.name, user_name=r.display_name) for r in resp]
         return AccountsReply(result=res)
 
     @app.get("/auth", response_model=Token)
@@ -64,16 +65,16 @@ try:
     async def get_my_account():
         resp = twitter_v2_cli.get_me()
         return AccountReply(
-            result=Account(user_id=resp.user_id, account_id=resp.account_id, name=resp.name, user_name=resp.user_name))
+            result=Account(id=resp.id, account_id=resp.account_id, name=resp.name, user_name=resp.display_name))
 
-    @app.get("/accounts/{account_id}",
+    @app.get("/accounts/{_id}",
              response_model=AccountReply,
              responses={401: {"model": ErrorReply}, 404: {"model": ErrorReply}, 500: {"model": ErrorReply}}
              )
-    async def get_account(account_id: int):
-        resp = twitter_svc.get_account(account_id)
+    async def get_account(_id: int):
+        resp = twitter_svc.get_account(_id)
         return AccountReply(
-            result=Account(user_id=resp.user_id, account_id=resp.account_id, name=resp.name, user_name=resp.user_name))
+            result=Account(id=resp.id, account_id=resp.account_id, name=resp.name, user_name=resp.display_name))
 
     @app.get("/update/{user_id}",
              response_model=AccountReply,
@@ -82,7 +83,7 @@ try:
     async def update_account(user_id: int):
         resp = twitter_svc.update_account(user_id)
         return AccountReply(
-            result=Account(user_id=resp.user_id, account_id=resp.account_id, name=resp.name, user_name=resp.user_name))
+            result=Account(id=resp.id, account_id=resp.account_id, name=resp.name, user_name=resp.display_name))
 
     @app.get("/update/trends/{woeid}", response_model=UpsertTrends, responses={500: {"model": ErrorReply}})
     async def collect_current_trends(woeid: int):
