@@ -1,32 +1,13 @@
-import functools
-from http import HTTPStatus
 from logging import Logger
 from typing import List
 
 from sqlalchemy.dialects import mysql
 from sqlalchemy.engine import Engine
-from sqlalchemy.exc import InvalidRequestError
-from sqlalchemy.exc import OperationalError as SQLAlchemyOperationalError
 from sqlalchemy.orm import Session, scoped_session, sessionmaker
 
-from ..models import Trend, WoeidRawTrend
-from ..services.accessor import (FAILED_FETCH_TRENDS, InvalidRequestException,
-                                 OperationalException, TrendAccessor)
-from .schemas import TrendTable
-
-
-# コールバック関数の引数(*args, **kwargs)をCallableで表現することは不可能なので型ヒントは書かない
-def handle_exception(func):
-    @functools.wraps(func)
-    def _handler_wrapper(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except SQLAlchemyOperationalError as e:
-            raise OperationalException(HTTPStatus.INTERNAL_SERVER_ERROR, FAILED_FETCH_TRENDS, list(e.args))
-        except InvalidRequestError as e:
-            raise InvalidRequestException(HTTPStatus.INTERNAL_SERVER_ERROR, FAILED_FETCH_TRENDS, list(e.args))
-
-    return _handler_wrapper
+from ...models import Trend, WoeidRawTrend
+from ...services.accessor import TrendAccessor
+from .schemas import TrendTable, handle_exception
 
 
 class TrendRepository(TrendAccessor):
