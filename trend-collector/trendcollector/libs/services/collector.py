@@ -55,13 +55,13 @@ class TwitterCollector(CollectorSvc):
         return self.twitter_account_repo.list_accounts()
 
     @add_exception_message("Twitterアカウントの取得に失敗")
-    def get_account(self, user_id: int) -> TwitterAccount:
-        return self.twitter_account_repo.get_account(user_id)
+    def get_account(self, _id: int) -> TwitterAccount:
+        return self.twitter_account_repo.get_account(_id)
 
     @add_exception_message("Twitterアカウントの更新に失敗")
-    def update_account(self, user_id: int) -> TwitterAccount:
-        old = self.twitter_account_repo.get_account(user_id)
-        account = self.twitter_cli.get_account(user_id, old.account_id)
+    def update_account(self, _id: int) -> TwitterAccount:
+        old = self.twitter_account_repo.get_account(_id)
+        account = self.twitter_cli.get_account(_id, old.account_id)
         return self.twitter_account_repo.update_account(account)
 
     @add_exception_message("トレンドデータの取得に失敗")

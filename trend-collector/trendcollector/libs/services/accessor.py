@@ -57,7 +57,7 @@ class TwitterAccountAccessor(metaclass=abc.ABCMeta):
     def update_account(self, account: TwitterAccount) -> TwitterAccount: pass
 
     @abc.abstractmethod
-    def get_account(self, user_id: int) -> TwitterAccount: pass
+    def get_account(self, _id: int) -> TwitterAccount: pass
 
 
 class TrendAccessor(metaclass=abc.ABCMeta):
