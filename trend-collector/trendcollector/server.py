@@ -8,7 +8,7 @@ from sqlalchemy.pool import QueuePool
 from libs.infrastractures.repositories.schemas import Base
 from libs.infrastractures import TrendRepository, TwitterAccountRepository
 from libs.infrastractures.response import *
-from libs.infrastractures.twitter_v2 import TwitterV2
+from libs.infrastractures.client.twitter_v2 import TwitterV2
 from libs.services.collector import TwitterCollector
 
 logger = logging.getLogger('uvicorn')
