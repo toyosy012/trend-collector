@@ -76,12 +76,12 @@ try:
         return AccountReply(
             result=Account(id=resp.id, account_id=resp.account_id, name=resp.name, user_name=resp.display_name))
 
-    @app.get("/update/{user_id}",
+    @app.get("/update/{_id}",
              response_model=AccountReply,
              responses={401: {"model": ErrorReply}, 500: {"model": ErrorReply}}
              )
-    async def update_account(user_id: int):
-        resp = twitter_svc.update_account(user_id)
+    async def update_account(_id: int):
+        resp = twitter_svc.update_account(_id)
         return AccountReply(
             result=Account(id=resp.id, account_id=resp.account_id, name=resp.name, user_name=resp.display_name))
 
