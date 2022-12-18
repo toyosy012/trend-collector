@@ -57,8 +57,8 @@ class TrendTable(Base):
     __tablename__ = "trends"
 
     id = Column(Integer(unsigned=True), primary_key=True, unique=True, nullable=False)
-    name = Column(String(90), unique=True, nullable=False)
-    query = Column(String(270), unique=True, nullable=False)  # 3バイト文字をurlエンコードすると9バイトになるとのことで3倍を設定
+    name = Column(String(120), unique=True, nullable=False)
+    query = Column(String(360), unique=True, nullable=False)  # 4バイト文字をurlエンコードすると9バイトになるとのことで3倍を設定
     tweet_volume = Column(Integer(unsigned=True), nullable=False)
     created_at = Column(DATETIME, nullable=False, server_default=current_timestamp())
     updated_at = Column(DATETIME, nullable=False, server_default=text('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'))
