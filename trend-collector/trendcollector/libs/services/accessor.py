@@ -1,4 +1,5 @@
 import abc
+import functools
 from typing import List
 
 from ..models.twitter import Trend, TwitterAccount, WoeidRawTrend
@@ -26,9 +27,26 @@ class OperationalException(CustomException):
         super().__init__(code, message, details)
 
 
+class AttributesException(CustomException):
+    def __init__(self, code: int, message: str, details: list[str]):
+        super().__init__(code, message, details)
+
+
 class RuntimeException(CustomException):
     def __init__(self, code: int, message: str, details: list[str]):
         super().__init__(code, message, details)
+
+
+def add_exception_message(message: str):
+    def _wrap_additional_message(func):
+        @functools.wraps(func)
+        def _add_exception_message(*args, **kwargs):
+            try:
+                return func(*args, **kwargs)
+            except CustomException as e:
+                raise CustomException(e.code, message, e.details)
+        return _add_exception_message
+    return _wrap_additional_message
 
 
 class TwitterAccountAccessor(metaclass=abc.ABCMeta):
