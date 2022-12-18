@@ -42,13 +42,13 @@ class TwitterAccountTable(Base):
     id = Column(Integer, primary_key=True)
     account_id = Column(Integer)
     name = Column(String(15))
-    user_name = Column(String(50))
+    display_name = Column(String(50))
     created_at = Column(DATETIME)
     updated_at = Column(DATETIME)
 
     def __repr__(self):
         return f"TwitterAccount(\
-                id={self.id!r}, account_id={self.account_id!r}, name={self.name!r}, user_name={self.user_name!r}\
+                id={self.id!r}, account_id={self.account_id!r}, name={self.name!r}, user_name={self.display_name!r}\
                 created={self.created_at!r}, updated_at={self.updated_at!r}\
             )"
 
