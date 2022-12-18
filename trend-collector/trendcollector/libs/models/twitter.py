@@ -2,13 +2,13 @@ class TwitterAccount:
     id: int
     account_id: int
     name: str
-    user_name: str
+    display_name: str
 
     def __init__(self, _id: int, account_id: int, name: str, display_name: str):
         self.id = _id
         self.account_id = account_id
         self.name = name
-        self.user_name = user_name
+        self.display_name = display_name
 
 
 class WoeidRawTrend:

@@ -38,7 +38,7 @@ class TwitterAccountRepository(TwitterAccountAccessor):
         try:
             record = session.query(TwitterAccountTable).filter(TwitterAccountTable.account_id == new.account_id).first()
             record.name = new.name
-            record.user_name = new.user_name
+            record.display_name = new.display_name
             session.add(record)
             n: TwitterAccount = self.get_account(new.id)
         except Exception as e:

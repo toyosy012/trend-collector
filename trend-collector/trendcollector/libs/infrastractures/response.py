@@ -14,10 +14,10 @@ class Token(BaseModel):
 
 
 class Account(BaseModel):
-    user_id: int = Field(default=None, example=0)
-    account_id: int = Field(default=0, example=0)
-    name: str = Field(default=DISPLAY_NAME, example=DISPLAY_NAME)
-    user_name: str = Field(default=USER_NAME, example=USER_NAME)
+    id: int = Field(None, example=1)
+    account_id: int = Field(None, example=1000000000000000)
+    name: str = Field(None, example=DISPLAY_NAME)
+    display_name: str = Field(None, example=USER_NAME)
 
 
 class TwitterTrend(BaseModel):
