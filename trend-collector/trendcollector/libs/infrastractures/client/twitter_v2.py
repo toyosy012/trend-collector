@@ -56,17 +56,15 @@ class TwitterV2(client.Twitter):
             self,
             bearer_token: str,
             consumer_key: str, consumer_secret: str,
-            access_token: str, access_token_secret: str,
-            logger: Logger):
+            access_token: str, access_token_secret: str):
         self.client = tweepy.Client(
             bearer_token=bearer_token,
             consumer_key=consumer_key, consumer_secret=consumer_secret,
-            access_token=access_token, access_token_secret=access_token_secret,
+            access_token=access_token, access_token_secret=access_token_secret
         )
         auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
         auth.set_access_token(access_token, access_token_secret)
         self.api = tweepy.API(auth)
-        self.logger = logger
 
     @handle_exception
     def get_me(self) -> TwitterAccount:

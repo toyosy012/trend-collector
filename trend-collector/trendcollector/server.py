@@ -12,7 +12,7 @@ from libs.infrastractures.response import *
 from libs.infrastractures.client.twitter_v2 import TwitterV2
 from libs.services.collector import TwitterCollector
 
-logger = logging.getLogger('uvicorn')
+
 env = Environment()
 app = FastAPI()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -20,7 +20,6 @@ twitter_v2_cli = TwitterV2(
     env.bearer_token,
     env.consumer_key, env.consumer_secret,
     env.access_token, env.access_token_secret,
-    logger
 )
 
 
@@ -43,8 +42,8 @@ try:
 
     Base.metadata.create_all(engine)
 
-    trend_repo = TrendRepository(engine, logger)
-    twitter_account_repo = TwitterAccountRepository(engine, logger)
+    trend_repo = TrendRepository(engine)
+    twitter_account_repo = TwitterAccountRepository(engine)
 
     twitter_svc = TwitterCollector(trend_repo, twitter_account_repo, twitter_v2_cli)
 
