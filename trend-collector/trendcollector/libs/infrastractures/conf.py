@@ -15,6 +15,7 @@ class Environment(BaseSettings):
     bearer_token: str
     consumer_key: str
     consumer_secret: str
+    result_log: str
     db_user: str
     db_pass: str
     db_name: str

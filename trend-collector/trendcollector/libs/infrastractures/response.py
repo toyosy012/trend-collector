@@ -65,10 +65,8 @@ class HttpErrorMiddleware(BaseHTTPMiddleware):
             self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
         try:
-            resp: Response = await call_next(request)
+            return await call_next(request)
         except CustomException as e:
             return JSONResponse(
                 status_code=e.code, content=jsonable_encoder(ErrorReply(message=e.message, details=e.details))
             )
-        else:
-            return resp
