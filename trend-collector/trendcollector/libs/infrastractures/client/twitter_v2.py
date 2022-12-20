@@ -1,4 +1,5 @@
 import functools
+import traceback
 from http import HTTPStatus
 from logging import Logger
 
@@ -7,6 +8,7 @@ from tweepy.client import Response
 
 from ...models import TwitterAccount, WoeidRawTrend
 from ...services import CustomException, client
+from ...services.custom_exception import IntervalServerException
 
 FORBIDDEN_ACCESS = "アクセス権限がないために失敗"
 FAILED_GET_MY_ACCOUNT = "自身のアカウントの取得に失敗"
@@ -16,18 +18,13 @@ TIMEOUT_REQUEST = "リクエストタイムアウト"
 
 
 class TwitterForbidden(CustomException):
-    def __init__(self, code: int, message: str, details: list[str]):
-        super().__init__(code, message, details)
+    def __init__(self, code: int, message: str, details: list[str], stack_trace: str | None):
+        super().__init__(code, message, details, stack_trace)
 
 
 class TwitterUnAuthorized(CustomException):
-    def __init__(self, code: int, message: str, details: list[str]):
-        super().__init__(code, message, details)
-
-
-class IntervalServerError(CustomException):
-    def __init__(self, code: int, message: str, details: list[str]):
-        super().__init__(code, message, details)
+    def __init__(self, code: int, message: str, details: list[str], stack_trace: str | None):
+        super().__init__(code, message, details, stack_trace)
 
 
 def handle_exception(func):
@@ -36,13 +33,17 @@ def handle_exception(func):
         try:
             return func(*args, **kwargs)
         except tweepy.Unauthorized as e:
-            raise TwitterUnAuthorized(HTTPStatus.INTERNAL_SERVER_ERROR, FAILED_GET_MY_ACCOUNT, e.api_messages)
+            raise TwitterUnAuthorized(
+                HTTPStatus.INTERNAL_SERVER_ERROR, FAILED_GET_MY_ACCOUNT, e.api_messages, traceback.format_exc())
         except tweepy.errors.Forbidden as e:
-            raise TwitterForbidden(HTTPStatus.INTERNAL_SERVER_ERROR, FAILED_GET_TRENDS, e.api_messages)
+            raise TwitterForbidden(
+                HTTPStatus.INTERNAL_SERVER_ERROR, FAILED_GET_TRENDS, e.api_messages, traceback.format_exc())
         except TimeoutError as e:
-            raise IntervalServerError(HTTPStatus.INTERNAL_SERVER_ERROR, FAILED_GET_MY_ACCOUNT, list(e.args))
+            raise IntervalServerException(
+                HTTPStatus.INTERNAL_SERVER_ERROR, FAILED_GET_MY_ACCOUNT, list(e.args), traceback.format_exc())
         except Exception as e:
-            raise IntervalServerError(HTTPStatus.INTERNAL_SERVER_ERROR, FAILED_GET_MY_ACCOUNT, list(e.args))
+            raise IntervalServerException(
+                HTTPStatus.INTERNAL_SERVER_ERROR, FAILED_GET_MY_ACCOUNT, list(e.args), traceback.format_exc())
 
     return _handler_wrapper
 
@@ -56,17 +57,15 @@ class TwitterV2(client.Twitter):
             self,
             bearer_token: str,
             consumer_key: str, consumer_secret: str,
-            access_token: str, access_token_secret: str,
-            logger: Logger):
+            access_token: str, access_token_secret: str):
         self.client = tweepy.Client(
             bearer_token=bearer_token,
             consumer_key=consumer_key, consumer_secret=consumer_secret,
-            access_token=access_token, access_token_secret=access_token_secret,
+            access_token=access_token, access_token_secret=access_token_secret
         )
         auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
         auth.set_access_token(access_token, access_token_secret)
         self.api = tweepy.API(auth)
-        self.logger = logger
 
     @handle_exception
     def get_me(self) -> TwitterAccount:

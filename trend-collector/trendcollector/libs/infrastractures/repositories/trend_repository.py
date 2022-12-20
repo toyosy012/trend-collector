@@ -14,10 +14,9 @@ class TrendRepository(TrendAccessor):
     engine: Engine
     logger: Logger
 
-    def __init__(self, engine: Engine, logger: Logger):
+    def __init__(self, engine: Engine):
         self.engine = engine
         self.session_factory = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=self.engine))
-        self.logger = logger
 
     @handle_exception
     def get(self, _id: int) -> Trend:
