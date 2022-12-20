@@ -13,28 +13,28 @@ FAILED_FETCH_TRENDS = "トレンドリストの取得に失敗"
 
 
 class DetachedInstance(CustomException):
-    def __init__(self, code: int, message: str, details: list[str]):
-        super().__init__(code, message, details)
+    def __init__(self, code: int, message: str, details: list[str], stack_trance: str | None):
+        super().__init__(code, message, details, stack_trance)
 
 
 class InvalidRequestException(CustomException):
-    def __init__(self, code: int, message: str, details: list[str]):
-        super().__init__(code, message, details)
+    def __init__(self, code: int, message: str, details: list[str], stack_trance: str | None):
+        super().__init__(code, message, details, stack_trance)
 
 
 class OperationalException(CustomException):
-    def __init__(self, code: int, message: str, details: list[str]):
-        super().__init__(code, message, details)
+    def __init__(self, code: int, message: str, details: list[str], stack_trance: str | None):
+        super().__init__(code, message, details, stack_trance)
 
 
 class AttributesException(CustomException):
-    def __init__(self, code: int, message: str, details: list[str]):
-        super().__init__(code, message, details)
+    def __init__(self, code: int, message: str, details: list[str], stack_trance: str | None):
+        super().__init__(code, message, details, stack_trance)
 
 
 class RuntimeException(CustomException):
-    def __init__(self, code: int, message: str, details: list[str]):
-        super().__init__(code, message, details)
+    def __init__(self, code: int, message: str, details: list[str], stack_trance: str | None):
+        super().__init__(code, message, details, stack_trance)
 
 
 def add_exception_message(message: str):
@@ -44,7 +44,7 @@ def add_exception_message(message: str):
             try:
                 return func(*args, **kwargs)
             except CustomException as e:
-                raise CustomException(e.code, message, e.details)
+                raise CustomException(e.code, message, e.details, e.stack_trace)
         return _add_exception_message
     return _wrap_additional_message
 
