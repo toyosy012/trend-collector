@@ -3,7 +3,8 @@ import uuid
 
 from fastapi import Request, Response
 from pylogrus import JsonFormatter, PyLogrus
-from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
+from starlette.middleware.base import (BaseHTTPMiddleware,
+                                       RequestResponseEndpoint)
 
 from ..services import CustomException
 

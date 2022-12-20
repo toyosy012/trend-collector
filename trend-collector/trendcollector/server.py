@@ -4,15 +4,13 @@ from typing import Union
 import sqlalchemy
 from fastapi import Depends, FastAPI
 from fastapi.security import OAuth2PasswordBearer
-from sqlalchemy.pool import QueuePool
-
-from libs.infrastractures.repositories.schemas import Base
 from libs.infrastractures import TrendRepository, TwitterAccountRepository
-from libs.infrastractures.response import *
 from libs.infrastractures.client.twitter_v2 import TwitterV2
+from libs.infrastractures.logger import config_logger, create_logging_handler
+from libs.infrastractures.repositories.schemas import Base
+from libs.infrastractures.response import *
 from libs.services.collector import TwitterCollector
-from libs.infrastractures.logger import create_logging_handler, config_logger
-
+from sqlalchemy.pool import QueuePool
 
 env = Environment()
 app = FastAPI()
