@@ -1,4 +1,5 @@
 import functools
+import traceback
 from http import HTTPStatus
 
 from sqlalchemy import DATETIME, Column, String
@@ -9,6 +10,7 @@ from sqlalchemy.orm.exc import DetachedInstanceError
 from sqlalchemy.sql.expression import text
 from sqlalchemy.sql.functions import current_timestamp
 
+from ..client.twitter_v2 import IntervalServerException, FAILED_GET_MY_ACCOUNT
 from ...services.accessor import (AttributesException, DetachedInstance, InvalidRequestException,
                                   OperationalException, RuntimeException)
 
@@ -20,15 +22,18 @@ def handle_exception(func):
         try:
             return func(*args, **kwargs)
         except DetachedInstanceError as e:
-            raise DetachedInstance(HTTPStatus.INTERNAL_SERVER_ERROR, "", list(e.args))
+            raise DetachedInstance(HTTPStatus.INTERNAL_SERVER_ERROR, "", list(e.args), traceback.format_exc())
         except SQLAlchemyOperationalError as e:
-            raise OperationalException(HTTPStatus.INTERNAL_SERVER_ERROR, "", list(e.args))
+            raise OperationalException(HTTPStatus.INTERNAL_SERVER_ERROR, "", list(e.args), traceback.format_exc())
         except InvalidRequestError as e:
-            raise InvalidRequestException(HTTPStatus.INTERNAL_SERVER_ERROR, "", list(e.args))
+            raise InvalidRequestException(HTTPStatus.INTERNAL_SERVER_ERROR, "", list(e.args), traceback.format_exc())
         except AttributeError as e:
-            raise AttributesException(HTTPStatus.BAD_REQUEST, "", list(e.args))
+            raise AttributesException(HTTPStatus.BAD_REQUEST, "", list(e.args), traceback.format_exc())
         except RuntimeError as e:
-            raise RuntimeException(HTTPStatus.INTERNAL_SERVER_ERROR, "", list(e.args))
+            raise RuntimeException(HTTPStatus.INTERNAL_SERVER_ERROR, "", list(e.args), traceback.format_exc())
+        except Exception as e:
+            raise IntervalServerException(
+                HTTPStatus.INTERNAL_SERVER_ERROR, FAILED_GET_MY_ACCOUNT, list(e.args), traceback.format_exc())
 
     return _handler_wrapper
 

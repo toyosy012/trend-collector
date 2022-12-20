@@ -14,10 +14,9 @@ class TwitterAccountRepository(TwitterAccountAccessor):
     engine: Engine
     logger: Logger
 
-    def __init__(self, engine: Engine, logger: Logger):
+    def __init__(self, engine: Engine):
         self.engine = engine
         self.session = scoped_session(sessionmaker(autocommit=True, autoflush=True, bind=self.engine))
-        self.logger = logger
 
     @handle_exception
     def list_accounts(self) -> [TwitterAccount]:
