@@ -4,15 +4,17 @@ from http import HTTPStatus
 
 from sqlalchemy import DATETIME, Column, String
 from sqlalchemy.dialects.mysql import INTEGER as Integer
-from sqlalchemy.exc import InvalidRequestError, OperationalError as SQLAlchemyOperationalError
+from sqlalchemy.exc import InvalidRequestError
+from sqlalchemy.exc import OperationalError as SQLAlchemyOperationalError
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm.exc import DetachedInstanceError
 from sqlalchemy.sql.expression import text
 from sqlalchemy.sql.functions import current_timestamp
 
-from ..client.twitter_v2 import IntervalServerException, FAILED_GET_MY_ACCOUNT
-from ...services.accessor import (AttributesException, DetachedInstance, InvalidRequestException,
+from ...services.accessor import (AttributesException, DetachedInstance,
+                                  InvalidRequestException,
                                   OperationalException, RuntimeException)
+from ..client.twitter_v2 import FAILED_GET_MY_ACCOUNT, IntervalServerException
 
 
 # コールバック関数の引数(*args, **kwargs)をCallableで表現することは不可能なので型ヒントは書かない

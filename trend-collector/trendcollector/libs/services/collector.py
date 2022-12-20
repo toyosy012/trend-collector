@@ -2,7 +2,8 @@ import abc
 
 from ..models import Trend, TwitterAccount, WoeidRawTrend
 from ..services.client import Twitter
-from .accessor import TrendAccessor, TwitterAccountAccessor, add_exception_message
+from .accessor import (TrendAccessor, TwitterAccountAccessor,
+                       add_exception_message)
 
 
 class CollectorSvc(metaclass=abc.ABCMeta):

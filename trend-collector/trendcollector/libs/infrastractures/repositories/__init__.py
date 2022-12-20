@@ -1,2 +1,2 @@
-from .twitter_account import TwitterAccountRepository
 from .trend_repository import TrendRepository
+from .twitter_account import TwitterAccountRepository
