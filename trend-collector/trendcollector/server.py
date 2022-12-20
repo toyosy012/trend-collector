@@ -11,6 +11,7 @@ from libs.infrastractures import TrendRepository, TwitterAccountRepository
 from libs.infrastractures.response import *
 from libs.infrastractures.client.twitter_v2 import TwitterV2
 from libs.services.collector import TwitterCollector
+from libs.infrastractures.logger import create_logging_handler, config_logger
 
 
 env = Environment()
@@ -107,6 +108,9 @@ try:
         resp = twitter_svc.delete_trend(_id)
         return DeleteTrends(success=resp)
 
+    # config middlewares
+    HttpLoggingHandler = create_logging_handler(config_logger(env.result_log))
+    app.add_middleware(HttpLoggingHandler)
     app.add_middleware(HttpErrorMiddleware)
 
 # DBコネクションの切断などで切れた場合に捕捉するコード
