@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field
 from starlette.middleware.base import (BaseHTTPMiddleware,
                                        RequestResponseEndpoint)
 
-from ..infrastractures.conf import *
+from ..infrastructures.conf import *
 from ..services import CustomException
 
 
