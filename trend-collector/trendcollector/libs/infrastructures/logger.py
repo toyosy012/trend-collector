@@ -11,19 +11,21 @@ from ..services import CustomException, APIErrorResponse
 
 def config_logger(output: str) -> PyLogrus:
     enabled_fields = [
-        'asctime',
-        'function',
-        'message',
-        'stack_trace'
+        "asctime",
+        "exception",
+        "function",
+        "message",
+        "stacktrace",
+        "levelname"
     ]
-    formatter = JsonFormatter(datefmt='Z', enabled_fields=enabled_fields, sort_keys=True)
-    handler = logging.FileHandler(output, encoding='utf-8')
+    formatter = JsonFormatter(datefmt="Z", enabled_fields=enabled_fields, sort_keys=True)
+    handler = logging.FileHandler(output, encoding="utf-8")
     handler.setFormatter(formatter)
 
     logging.setLoggerClass(PyLogrus)
     logger: PyLogrus = logging.getLogger(__name__)  # setLoggerClassによりPyLogrusで生成
-    logger.addHandler(handler)
-    logger.setLevel(logging.INFO)
+    logger.handlers = [handler]
+    logger.setLevel(level=logging.INFO)
     return logger
 
 
@@ -39,9 +41,9 @@ def create_logging_handler(logger: PyLogrus):
             except CustomException as e:
                 logger.withFields(
                     {
-                        'level': logging.getLevelName(logging.ERROR), 'code': e.code, 'details': e.details,
-                        'stack_trace': e.stack_trace, 'path': str(request.url.path), 'body': str(body.decode()),
-                        'uuid': request_uuid, 'user_agent': request.headers.get("User-Agent"), 'method': request.method
+                        "code": e.code, "details": e.details,
+                        "path": str(request.url.path), "body": str(body.decode()),
+                        "uuid": request_uuid, "user_agent": request.headers.get("User-Agent"), "method": request.method
                     }
                 ).exception("error")
                 raise APIErrorResponse(e.code, e.message, request_uuid)
