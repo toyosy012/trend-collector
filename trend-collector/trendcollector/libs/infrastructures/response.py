@@ -5,8 +5,8 @@ from pydantic import BaseModel, Field
 from starlette.middleware.base import (BaseHTTPMiddleware,
                                        RequestResponseEndpoint)
 
-from ..infrastractures.conf import *
-from ..services import CustomException
+from ..infrastructures.conf import *
+from ..services import APIErrorResponse
 
 
 class Token(BaseModel):
@@ -31,13 +31,13 @@ class UpsertTrends(BaseModel):
     success: bool = Field(None, example=True)
 
 
-class DeleteTrends(BaseModel):
+class DeleteTrend(BaseModel):
     success: bool = Field(None, example=True)
 
 
 class ErrorReply(BaseModel):
     message: str = Field(None, example="エラーが発生しました")
-    details: list[str] = Field(None, example=["エラー原因を列挙"])
+    request_id: str = Field(None, example="12345678-1234-5678-1234-567812345678")
 
 
 class AccountReply(BaseModel):
@@ -65,8 +65,10 @@ class HttpErrorMiddleware(BaseHTTPMiddleware):
             self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
         try:
-            return await call_next(request)
-        except CustomException as e:
+            result = await call_next(request)
+        except APIErrorResponse as e:
             return JSONResponse(
-                status_code=e.code, content=jsonable_encoder(ErrorReply(message=e.message, details=e.details))
+                status_code=e.code, content=jsonable_encoder(ErrorReply(message=e.message, request_id=e.request_id))
             )
+        else:
+            return result
