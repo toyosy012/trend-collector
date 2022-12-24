@@ -36,6 +36,12 @@ def create_logging_handler(logger: PyLogrus):
         ) -> Response:
             request_uuid = str(uuid.uuid4())
             body = await request.body()
+            logger.withFields(
+                {
+                    "path": str(request.url.path), "body": str(body.decode()),
+                    "uuid": request_uuid, "user_agent": request.headers.get("User-Agent"), "method": request.method
+                }
+            ).info("request")
             try:
                 result = await call_next(request)
             except CustomException as e:
@@ -48,5 +54,13 @@ def create_logging_handler(logger: PyLogrus):
                 ).exception("error")
                 raise APIErrorResponse(e.code, e.message, request_uuid)
             else:
+                logger.withFields(
+                    {
+                        "path": str(request.url.path), "uuid": request_uuid, "code": result.status_code,
+                        "user_agent": request.headers.get("User-Agent"), "method": request.method
+                    }
+                ).info("response")
                 return result
+
     return _HttpLoggingMiddleware
+
