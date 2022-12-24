@@ -54,6 +54,9 @@ class TrendRepository(TrendAccessor):
         finally:
             session.close()
 
+    # Warning: when using `insert on duplicate key update` & `auto_increment` together,
+    # ID-like increments will increase rapidly!
+    # https://mariadb.com/kb/en/auto_increment-on-insert-on-duplicate-key-update/
     def upsert(self, trends: List[WoeidRawTrend]) -> bool:
         insert_stmt = mysql.insert(TrendTable).values([
             dict(
