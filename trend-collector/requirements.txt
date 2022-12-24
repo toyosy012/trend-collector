@@ -8,10 +8,14 @@ anyio==3.6.2
     # via starlette
 certifi==2022.12.7
     # via requests
+cffi==1.15.1
+    # via cryptography
 charset-normalizer==2.1.1
     # via requests
 click==8.1.3
     # via uvicorn
+cryptography==38.0.4
+    # via -r requirements.in
 fastapi==0.88.0
     # via -r requirements.in
 greenlet==2.0.1
@@ -28,6 +32,8 @@ oauthlib==3.2.2
     # via
     #   requests-oauthlib
     #   tweepy
+pycparser==2.21
+    # via cffi
 pydantic==1.10.2
     # via
     #   -r requirements.in
