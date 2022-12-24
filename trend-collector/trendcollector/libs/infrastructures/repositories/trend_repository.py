@@ -1,13 +1,21 @@
 from logging import Logger
+from http import HTTPStatus
 from typing import List
 
 from sqlalchemy.dialects import mysql
 from sqlalchemy.engine import Engine
+from sqlalchemy.exc import NoResultFound, OperationalError
 from sqlalchemy.orm import Session, scoped_session, sessionmaker
 
 from ...models import Trend, WoeidRawTrend
+from .schemas import TrendTable
 from ...services.accessor import TrendAccessor
-from .schemas import TrendTable, handle_exception
+from ...services.custom_exception import NoTrendRecord, DisconnectionDB, SEARCH_ERROR, UPDATE_ERROR, DELETE_ERROR
+
+FAILED_DELETE_TREND = "トレンドデータの削除に失敗しました"
+FAILED_FETCH_TREND = "トレンドデータは取得に失敗"
+FAILED_FETCH_TRENDS = "トレンドリストデータは取得に失敗"
+FAILED_UPDATE_TRENDS = "トレンドデータの更新に失敗"
 
 
 class TrendRepository(TrendAccessor):
@@ -18,30 +26,34 @@ class TrendRepository(TrendAccessor):
         self.engine = engine
         self.session_factory = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=self.engine))
 
-    @handle_exception
     def get(self, _id: int) -> Trend:
         session = self.session_factory()
         try:
-            record: TrendTable = session.query(TrendTable).filter(TrendTable.id == _id).first()
+            record: TrendTable = session.query(TrendTable).filter(TrendTable.id == _id).one()
             return Trend(_id=record.id, name=record.name, query=record.query, tweet_volume=record.tweet_volume)
-        except Exception as e:
-            self.logger.error(e)
-            raise e
+        except NoResultFound as e:
+            raise NoTrendRecord(
+                HTTPStatus.BAD_REQUEST, SEARCH_ERROR, list(e.args)
+            )
+        except OperationalError as e:
+            raise DisconnectionDB(
+                HTTPStatus.INTERNAL_SERVER_ERROR, f"{SEARCH_ERROR}: {FAILED_FETCH_TREND}", list(e.args)
+            )
         finally:
             session.close()
 
-    @handle_exception
     def list(self, page: int, counts: int) -> list[Trend]:
         session: Session = self.session_factory()
         try:
             resp = session.query(TrendTable).offset((page - 1) * counts).limit(counts).all()
             return [Trend(_id=t.id, name=t.name, query=t.query, tweet_volume=t.tweet_volume) for t in resp]
-        except Exception as e:
-            raise e
+        except OperationalError as e:
+            raise DisconnectionDB(
+                HTTPStatus.INTERNAL_SERVER_ERROR, f"{SEARCH_ERROR}: {FAILED_FETCH_TRENDS}", list(e.args)
+            )
         finally:
             session.close()
 
-    @handle_exception
     def upsert(self, trends: List[WoeidRawTrend]) -> bool:
         insert_stmt = mysql.insert(TrendTable).values([
             dict(
@@ -60,23 +72,28 @@ class TrendRepository(TrendAccessor):
             session.execute(upsert_stmt)
             session.commit()
             return True
-        except Exception as e:
-            self.logger.error(e)
+        except OperationalError as e:
             session.rollback()
-            raise e
+            raise DisconnectionDB(
+                HTTPStatus.INTERNAL_SERVER_ERROR, f"{UPDATE_ERROR}: {FAILED_UPDATE_TRENDS}", list(e.args)
+            )
         finally:
             session.close()
 
-    @handle_exception
-    def delete(self, _id: Trend) -> bool:
+    def delete(self, _id: int) -> bool:
         session: Session = self.session_factory()
         try:
+            session.query(TrendTable).filter(TrendTable.id == _id).one()
             session.query(TrendTable).filter(TrendTable.id == _id).delete()
             session.commit()
             return True
-        except Exception as e:
-            self.logger.error(e)
-            session.rollback()
-            raise e
+        except NoResultFound as e:
+            raise NoTrendRecord(
+                HTTPStatus.BAD_REQUEST, DELETE_ERROR, list(e.args)
+            )
+        except OperationalError as e:
+            raise DisconnectionDB(
+                HTTPStatus.INTERNAL_SERVER_ERROR, f"{DELETE_ERROR}: {FAILED_DELETE_TREND}", list(e.args)
+            )
         finally:
             session.close()
