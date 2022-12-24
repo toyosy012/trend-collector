@@ -1,6 +1,6 @@
 from typing import Union
 
-from ....response import TwitterTrend, TwitterTrendsReply, DeleteTrends, UpsertTrends
+from ....response import TwitterTrend, TwitterTrendsReply, DeleteTrend, UpsertTrends
 from .....services.collector import CollectorSvc
 
 
@@ -25,4 +25,4 @@ class TrendRoutes:
 
     async def delete_trend(self, _id: int):
         resp = self.collector.delete_trend(_id)
-        return DeleteTrends(success=resp)
+        return DeleteTrend(success=resp)
