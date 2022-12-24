@@ -31,7 +31,8 @@ try:
         # 複数のリポジトリで使い回すので多めにコネクションをプールできるようにする
         poolclass=QueuePool,
         pool_size=10,
-        max_overflow=20
+        max_overflow=20,
+        pool_pre_ping=True
     )
     Base.metadata.create_all(engine)
 
