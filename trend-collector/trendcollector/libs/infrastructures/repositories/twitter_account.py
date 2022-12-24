@@ -1,13 +1,20 @@
+from http import HTTPStatus
 from logging import Logger
 
 from sqlalchemy.engine.base import Engine
+from sqlalchemy.exc import NoResultFound, OperationalError
 from sqlalchemy.orm import Session, scoped_session, sessionmaker
 
 from ...models.twitter import TwitterAccount
 from ...services.accessor import TwitterAccountAccessor
-from ..repositories.schemas import TwitterAccountTable, handle_exception
+from ...services.custom_exception import DisconnectionDB, NoTwitterAccountRecord, SEARCH_ERROR, UPDATE_ERROR
+from ..repositories.schemas import TwitterAccountTable
 
 # https://cloud.google.com/sql/docs/mysql/manage-connections?hl=ja
+
+FAILED_FETCH_ACCOUNT = "Twitterアカウントデータの取得に失敗"
+FAILED_FETCH_ACCOUNTS = "Twitterアカウントリストデータは取得に失敗"
+FAILED_UPDATE_ACCOUNT = "Twitterアカウントデータの更新に失敗"
 
 
 class TwitterAccountRepository(TwitterAccountAccessor):
@@ -16,44 +23,60 @@ class TwitterAccountRepository(TwitterAccountAccessor):
 
     def __init__(self, engine: Engine):
         self.engine = engine
-        self.session = scoped_session(sessionmaker(autocommit=True, autoflush=True, bind=self.engine))
+        self.session_factory = scoped_session(sessionmaker(autocommit=True, autoflush=True, bind=self.engine))
 
-    @handle_exception
     def list_accounts(self) -> [TwitterAccount]:
-        session: Session = self.session()
+        session: Session = self.session_factory()
         try:
             rows = session.query(TwitterAccountTable).all()
-        except Exception as e:
-            raise e
+        except OperationalError as e:
+            raise DisconnectionDB(
+                HTTPStatus.INTERNAL_SERVER_ERROR,
+                f"{SEARCH_ERROR}: {FAILED_FETCH_ACCOUNTS}", list(e.args)
+            )
         finally:
             session.close()
         return [
             TwitterAccount(_id=r.id, account_id=r.account_id, name=r.name, display_name=r.display_name) for r in rows
         ]
 
-    @handle_exception
     def update_account(self, new: TwitterAccount) -> TwitterAccount:
-        session: Session = self.session()
+        session: Session = self.session_factory()
         try:
-            record = session.query(TwitterAccountTable).filter(TwitterAccountTable.account_id == new.account_id).first()
+            session.begin()
+
+            record = session.query(
+                TwitterAccountTable).filter(TwitterAccountTable.account_id == new.account_id).one()
             record.name = new.name
             record.display_name = new.display_name
             session.add(record)
-            n: TwitterAccount = self.get_account(new.id)
-        except Exception as e:
-            session.rollback()
-            raise e
+            session.commit()
+            n: TwitterAccount = self.get_account(record.id)
+        except NoResultFound as e:
+            raise NoTwitterAccountRecord(
+                HTTPStatus.BAD_REQUEST, UPDATE_ERROR, list(e.args)
+            )
+        except OperationalError as e:
+            raise DisconnectionDB(
+                HTTPStatus.INTERNAL_SERVER_ERROR,
+                f"{UPDATE_ERROR}: {FAILED_UPDATE_ACCOUNT}", list(e.args)
+            )
         finally:
             session.close()
         return TwitterAccount(n.id, n.account_id, n.name, n.display_name)
 
-    @handle_exception
     def get_account(self, _id: int) -> TwitterAccount:
-        session: Session = self.session()
+        session: Session = self.session_factory()
         try:
-            record = session.query(TwitterAccountTable).filter(TwitterAccountTable.id == _id).first()
+            record = session.query(TwitterAccountTable).filter(TwitterAccountTable.id == _id).one()
             return TwitterAccount(record.id, record.account_id, record.name, record.display_name)
-        except Exception as e:
-            raise e
+        except NoResultFound as e:
+            raise NoTwitterAccountRecord(
+                HTTPStatus.BAD_REQUEST, SEARCH_ERROR, list(e.args)
+            )
+        except OperationalError as e:
+            raise DisconnectionDB(
+                HTTPStatus.INTERNAL_SERVER_ERROR, f"{SEARCH_ERROR}: {FAILED_FETCH_ACCOUNT}", list(e.args)
+            )
         finally:
             session.close()

@@ -6,7 +6,7 @@ from pylogrus import JsonFormatter, PyLogrus
 from starlette.middleware.base import (BaseHTTPMiddleware,
                                        RequestResponseEndpoint)
 
-from ..services import CustomException
+from ..services import CustomException, APIErrorResponse
 
 
 def config_logger(output: str) -> PyLogrus:
@@ -44,7 +44,7 @@ def create_logging_handler(logger: PyLogrus):
                         'uuid': request_uuid, 'user_agent': request.headers.get("User-Agent"), 'method': request.method
                     }
                 ).exception("error")
-                raise e
+                raise APIErrorResponse(e.code, e.message, request_uuid)
             else:
                 return result
     return _HttpLoggingMiddleware
