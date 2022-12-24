@@ -92,7 +92,8 @@ trend_router.add_api_route("", trend_v1_routes.list_trend, methods=["GET"], resp
 trend_router.add_api_route("/{_id}", trend_v1_routes.get_trend, methods=["GET"], response_model=TwitterTrend)
 trend_router.add_api_route("/update/{woeid}", trend_v1_routes.collect_current_trends, methods=["GET"],
                            response_model=UpsertTrends, responses={500: {"model": ErrorReply}})
-trend_router.add_api_route("/{_id}", trend_v1_routes.delete_trend, methods=["DELETE"], response_model=TwitterTrend)
+trend_router.add_api_route("/{_id}", trend_v1_routes.delete_trend, methods=["DELETE"], response_model=DeleteTrend,
+                           responses={500: {"model": ErrorReply}})
 trend_prefix = APIRouter()
 trend_prefix.include_router(trend_router, prefix="/trends")
 

@@ -31,7 +31,7 @@ class UpsertTrends(BaseModel):
     success: bool = Field(None, example=True)
 
 
-class DeleteTrends(BaseModel):
+class DeleteTrend(BaseModel):
     success: bool = Field(None, example=True)
 
 
