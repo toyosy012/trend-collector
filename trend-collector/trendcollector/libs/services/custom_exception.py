@@ -41,7 +41,7 @@ class NoTwitterAccountRecord(DataBaseException):
         super().__init__(code, f"{message}: Twitterアカウントデータは存在しません", details)
 
 
-class LoggedException(Exception):
+class APIErrorResponse(Exception):
     def __init__(self, code: int, message: str, request_id: str):
         self.code = code
         self.message = message
