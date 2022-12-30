@@ -1,6 +1,8 @@
 import abc
 
-from ..models import TwitterAccount, WoeidRawTrend
+from datetime import datetime
+
+from ..models import TwitterAccount, TrendQuery, TrendMetrics
 
 
 class Twitter(metaclass=abc.ABCMeta):
@@ -12,4 +14,9 @@ class Twitter(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def list_trends(self, woeid: int) -> list[WoeidRawTrend]: pass
+
+    @abc.abstractmethod
+    def list_trend_metrics(
+            self, query: TrendQuery, start_time: datetime, end_time: datetime, granularity: str
+    ) -> TrendMetrics: pass
 
