@@ -87,20 +87,16 @@ twitter_account_router.add_api_route("/update/{_id}", twitter_account_v1_routes.
 twitter_account_prefix = APIRouter()
 twitter_account_prefix.include_router(twitter_account_router, prefix="/accounts")
 
-trend_v1_routes = TrendRoutes(twitter_svc)
 trend_router = APIRouter()
-trend_router.add_api_route("", trend_v1_routes.list_trend, methods=["GET"], response_model=TwitterTrendsReply)
-trend_router.add_api_route("/{_id}", trend_v1_routes.get_trend, methods=["GET"], response_model=TwitterTrend)
-trend_router.add_api_route("/update/{woeid}", trend_v1_routes.collect_current_trends, methods=["GET"],
-                           response_model=UpsertTrends, responses={500: {"model": ErrorReply}})
+trend_v1_routes = TrendRoutes(twitter_svc)
+trend_router.add_api_route("", trend_v1_routes.list_trend, methods=["GET"], response_model=TrendSummaries)
+trend_router.add_api_route("/{_id}", trend_v1_routes.get_trend, methods=["GET"], response_model=TrendSummary)
 trend_router.add_api_route("/{_id}", trend_v1_routes.delete_trend, methods=["DELETE"], response_model=DeleteTrend,
                            responses={500: {"model": ErrorReply}})
 trend_router.add_api_route("/metrics/{_id}", trend_v1_routes.list_trend_metrics, methods=["GET"],
                            response_model=TrendMetrics, responses={500: {"model": ErrorReply}})
 trend_prefix = APIRouter()
 trend_prefix.include_router(trend_router, prefix="/trends")
-
-app.include_router(twitter_account_prefix, prefix="/v1")
 app.include_router(trend_prefix, prefix="/v1")
 
 
