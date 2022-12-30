@@ -11,11 +11,11 @@ class TrendRoutes:
     def __init__(self, collector: CollectorSvc):
         self.collector = collector
 
-    async def get_trend(self, _id: int):
+    async def get_trend(self, _id: int = Path(gt=0)) -> TrendSummary:
         resp = self.collector.get_trend(_id)
         return TrendSummary(id=resp.id, name=resp.name, updated_at=resp.updated_at)
 
-    async def list_trend(self, page: Union[int, None] = 1, counts: Union[int, None] = 20):
+    async def list_trend(self, page: Union[int, None] = 1, counts: Union[int, None] = 20) -> TrendSummaries:
         resp = self.collector.list_trends(page, counts)
         return TrendSummaries(
             result=[TrendSummary(id=t.id, name=t.name, updated_at=t.updated_at) for t in resp],
