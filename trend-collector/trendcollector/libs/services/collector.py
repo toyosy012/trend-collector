@@ -24,10 +24,10 @@ class CollectorSvc(metaclass=abc.ABCMeta):
     def update_account(self, account_id: int) -> TwitterAccount: pass
 
     @abc.abstractmethod
-    def get_trend(self, _id: int) -> Trend: pass
+    def get_trend(self, _id: int) -> TrendSummary: pass
 
     @abc.abstractmethod
-    def list_trends(self, page: int, counts: int) -> list[Trend]: pass
+    def list_trends(self, page: int, counts: int) -> list[TrendSummary]: pass
 
     @abc.abstractmethod
     def list_trend_metrics(
@@ -63,10 +63,10 @@ class TwitterCollector(CollectorSvc):
         account = self.twitter_cli.get_account(_id, old.account_id)
         return self.twitter_account_repo.update_account(account)
 
-    def get_trend(self, _id: int) -> Trend:
+    def get_trend(self, _id: int) -> TrendSummary:
         return self.trend_repo.get(_id)
 
-    def list_trends(self, page: int, counts: int) -> list[Trend]:
+    def list_trends(self, page: int, counts: int) -> list[TrendSummary]:
         return self.trend_repo.list(page, counts)
 
     def list_trend_metrics(self, trend_id: int,

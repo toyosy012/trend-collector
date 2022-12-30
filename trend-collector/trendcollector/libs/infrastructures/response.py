@@ -1,3 +1,4 @@
+from datetime import datetime
 from fastapi import Request, Response
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
@@ -20,11 +21,23 @@ class Account(BaseModel):
     display_name: str = Field(None, example=USER_NAME)
 
 
-class TwitterTrend(BaseModel):
-    id: int = Field(None, example=0)
+class TrendSummary(BaseModel):
+    id: int = Field(None, example=RECORD_ID)
     name: str = Field(None, example=TREND_NAME)
-    query: str = Field(None, example=TREND_QUERY)
-    tweet_volume: int = Field(None, example=1000)
+    updated_at: datetime = Field(None, example=datetime.strptime(INPUT_DATETIME, INPUT_DATETIME_FORMAT))
+
+
+class TrendSummaries(BaseModel):
+    result: list[TrendSummary] = Field(
+        None,
+        title="TrendSummaries",
+        example=[
+            TrendSummary(
+                id=RECORD_ID, name=TREND_NAME, updated_at=datetime.strptime(INPUT_DATETIME, INPUT_DATETIME_FORMAT)
+            )
+        ]
+    )
+    length: int = Field(None, title="Length", example=1)
 
 
 class UpsertTrends(BaseModel):

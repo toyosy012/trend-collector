@@ -26,17 +26,15 @@ class WoeidRawTrend:
         self.tweet_volume = tweet_volume if tweet_volume is not None else 0
 
 
-class Trend:
+class TrendSummary:
     id: int
     name: str
-    query: str
-    tweet_volume: int | None
+    updated_at: datetime
 
-    def __init__(self, _id: int, name: str, query: str, tweet_volume: int | None):
+    def __init__(self, _id: int, name: str, updated_at: datetime):
         self.id = _id
         self.name = name
-        self.query = query
-        self.tweet_volume = tweet_volume if tweet_volume is not None else 0
+        self.updated_at = updated_at
 
 
 class TrendVolume:
