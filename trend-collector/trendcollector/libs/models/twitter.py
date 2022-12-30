@@ -1,3 +1,7 @@
+from datetime import datetime
+from typing import List
+
+
 class TwitterAccount:
     id: int
     account_id: int
@@ -33,3 +37,27 @@ class Trend:
         self.name = name
         self.query = query
         self.tweet_volume = tweet_volume if tweet_volume is not None else 0
+
+
+class TrendVolume:
+    volume: int
+    start: datetime
+    end: datetime
+
+    def __init__(self, volume: int | None, start: datetime, end: datetime):
+        self.start = start
+        self.end = end
+        self.volume = volume if volume is not None else 0
+
+
+class TrendMetrics:
+    id: int
+    name: str
+    total: int
+    volumes: [TrendVolume]
+
+    def __init__(self, _id: int, name: str, total: int, volumes: List[TrendVolume]):
+        self.id = _id
+        self.name = name
+        self.total = total
+        self.volumes = volumes
