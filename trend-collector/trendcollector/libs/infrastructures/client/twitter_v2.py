@@ -81,7 +81,7 @@ class TwitterV2(client.Twitter):
     def list_trend_metrics(
             self, query: TrendQuery, start_time: datetime, end_time: datetime, granularity: str) -> TrendMetrics:
         try:
-            volumes = self.client.get_all_tweets_count(
+            volumes = self.client.get_recent_tweets_count(
                 query.name, start_time=start_time.isoformat(), end_time=end_time.isoformat(), granularity=granularity
             )
         except tweepy.errors.BadRequest as e:
