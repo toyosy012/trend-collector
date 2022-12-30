@@ -35,9 +35,25 @@ class DeleteTrend(BaseModel):
     success: bool = Field(None, example=True)
 
 
-class ErrorReply(BaseModel):
-    message: str = Field(None, example="エラーが発生しました")
-    request_id: str = Field(None, example="12345678-1234-5678-1234-567812345678")
+class TrendVolume(BaseModel):
+    volume: int = Field(None, example=TREND_VOLUME)
+    start: datetime = Field(None, example=datetime.strptime(START_DATETIME, INPUT_DATETIME_FORMAT))
+    end: datetime = Field(None, example=datetime.strptime(END_DATETIME, INPUT_DATETIME_FORMAT))
+
+
+class TrendMetrics(BaseModel):
+    id: int = Field(None, example=RECORD_ID)
+    name: str = Field(None, example=TREND_NAME)
+    total: int = Field(None, example=1)
+    volumes: list[TrendVolume] = Field(
+        None, example=[
+            TrendVolume(
+                volume=TREND_VOLUME,
+                start=datetime.strptime(START_DATETIME, INPUT_DATETIME_FORMAT),
+                end=datetime.strptime(END_DATETIME, INPUT_DATETIME_FORMAT)
+            )
+        ]
+    )
 
 
 class AccountReply(BaseModel):
