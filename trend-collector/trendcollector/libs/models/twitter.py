@@ -61,3 +61,12 @@ class TrendMetrics:
         self.name = name
         self.total = total
         self.volumes = volumes
+
+
+class TrendQuery:
+    trend_id: int
+    name: str
+
+    def __init__(self, trend_id: int, name: str):
+        self.trend_id = trend_id
+        self.name = name

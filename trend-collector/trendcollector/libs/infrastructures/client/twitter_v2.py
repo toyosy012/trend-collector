@@ -1,21 +1,17 @@
+from datetime import datetime
 from http import HTTPStatus
 from logging import Logger
 
 import tweepy
 from tweepy.client import Response
 
-from ...models import TwitterAccount, WoeidRawTrend
-from ...services import CustomException, client
-from ...services.custom_exception import Timeout, FETCH_ERROR
+from ...models import TwitterAccount, WoeidRawTrend, TrendMetrics, TrendVolume, TrendQuery
+from ...services import client
+from ...services.custom_exception import Timeout, TwitterBadRequest, TwitterUnAuthorized, TwitterForbidden, FETCH_ERROR
 
 FAILED_FETCH_ACCOUNT = "自身のアカウントの取得に失敗"
 FAILED_FETCH_TRENDS = "トレンドリストの取得に失敗"
-
-
-class TwitterForbidden(CustomException):
-    def __init__(self, code: int, message: str, details: list[str]):
-        super().__init__(code, message, details)
-
+FAILED_FETCH_TREND_METRICS = "トレンドメトリクスの取得に失敗"
 
 class TwitterUnAuthorized(CustomException):
     def __init__(self, code: int, message: str, details: list[str]):
@@ -80,5 +76,29 @@ class TwitterV2(client.Twitter):
             raise TwitterForbidden(
                 HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_TRENDS}", e.api_messages)
         except TimeoutError as e:
-            raise Timeout(
-                HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_TRENDS}", list(e.args))
+            raise Timeout(HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_TRENDS}", list(e.args))
+
+    def list_trend_metrics(
+            self, query: TrendQuery, start_time: datetime, end_time: datetime, granularity: str) -> TrendMetrics:
+        try:
+            volumes = self.client.get_all_tweets_count(
+                query.name, start_time=start_time.isoformat(), end_time=end_time.isoformat(), granularity=granularity
+            )
+        except tweepy.errors.BadRequest as e:
+            raise TwitterBadRequest(
+                HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_TREND_METRICS}", e.api_messages)
+        except tweepy.errors.Unauthorized as e:
+            raise TwitterUnAuthorized(
+                HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_TREND_METRICS}", e.api_messages)
+        except tweepy.errors.Forbidden as e:
+            raise TwitterBadRequest(
+                HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_TREND_METRICS}", e.api_messages)
+        except TimeoutError as e:
+            raise Timeout(HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_TRENDS}", list(e.args))
+        else:
+            if len(volumes) <= 0:
+                return TrendMetrics(query.trend_id, query.name, 0, [])
+
+            volumes = [TrendVolume(v['tweet_count'], v["start"], v["end"]) for v in volumes.data]
+            return TrendMetrics(query.trend_id, query.name, len(volumes), volumes)
+
