@@ -15,15 +15,13 @@ class TwitterAccount:
         self.display_name = display_name
 
 
-class WoeidRawTrend:
+class InputRawTrend:
     name: str
     query: str
-    tweet_volume: int | None
 
-    def __init__(self, name: str, query: str, tweet_volume: int | None):
+    def __init__(self, name: str, query: str):
         self.name = name
         self.query = query
-        self.tweet_volume = tweet_volume if tweet_volume is not None else 0
 
 
 class TrendSummary:
