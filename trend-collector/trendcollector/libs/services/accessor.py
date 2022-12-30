@@ -1,7 +1,7 @@
 import abc
 from typing import List
 
-from ..models.twitter import Trend, TwitterAccount, WoeidRawTrend
+from ..models.twitter import TrendSummary, TwitterAccount, WoeidRawTrend
 
 TWITTER_ACCOUNTS = "twitter_accounts"
 FAILED_FETCH_ACCOUNT = "アカウントの取得に失敗"
