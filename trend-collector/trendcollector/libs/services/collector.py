@@ -1,6 +1,8 @@
 import abc
 
-from ..models import Trend, TwitterAccount, WoeidRawTrend
+from datetime import datetime
+
+from ..models import TrendMetrics, TwitterAccount, TrendQuery, InputRawTrend
 from ..services.client import Twitter
 from .accessor import TrendAccessor, TwitterAccountAccessor
 
