@@ -1,7 +1,10 @@
+from datetime import datetime
+
+from fastapi import Path, Query
 from typing import Union
 
-from ....response import TwitterTrend, TwitterTrendsReply, DeleteTrend, UpsertTrends
-from .....services.collector import CollectorSvc
+from ....response import DeleteTrend, TrendMetrics, TrendSummary, TrendSummaries, TrendVolume
+from .....services.collector import MediaCollectorSvc
 
 
 class TrendRoutes:
@@ -19,10 +22,19 @@ class TrendRoutes:
             length=len(resp)
         )
 
-    async def collect_current_trends(self, woeid: int):
-        resp = self.collector.upsert_trends(woeid)
-        return UpsertTrends(success=resp)
+    async def list_trend_metrics(
+            self,
+            start_time_utc: datetime,
+            end_time_utc: datetime,
+            _id: int = Path(gt=0),
+            granularity: Union[str, None] = Query("hour", regex="^(minute|hour|day)$")
+    ) -> TrendMetrics:
 
-    async def delete_trend(self, _id: int):
+        trend_detail = self.collector.list_trend_metrics(_id, start_time_utc, end_time_utc, granularity)
+        volumes = [TrendVolume(volume=v.volume, start=v.start, end=v.end) for v in trend_detail.volumes]
+        return TrendMetrics(
+            id=trend_detail.id, name=trend_detail.name, total=trend_detail.total, volumes=volumes)
+
+    async def delete_trend(self, _id: int = Path(gt=0)):
         resp = self.collector.delete_trend(_id)
         return DeleteTrend(success=resp)

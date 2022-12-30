@@ -10,9 +10,9 @@ from sqlalchemy.pool import QueuePool
 from libs.infrastructures import TrendRepository, TwitterAccountRepository
 from libs.infrastructures.api.v1.endpoints import TrendRoutes, TwitterAccountRoutes
 from libs.infrastructures.client.twitter_v2 import TwitterV2
-from libs.infrastructures.logger import config_logger, create_logging_handler
-from libs.infrastructures.repositories.schemas import Base
-from libs.infrastructures.response import *
+from libs.infrastructures.logger import LogCustomizer
+from libs.infrastructures.response import (TrendMetrics, HttpErrorMiddleware, AccountsReply, ErrorReply,
+                                           AccountReply, TrendSummaries, DeleteTrend, TrendSummary)
 from libs.services.collector import TwitterCollector
 
 env = Environment()
@@ -95,6 +95,8 @@ trend_router.add_api_route("/update/{woeid}", trend_v1_routes.collect_current_tr
                            response_model=UpsertTrends, responses={500: {"model": ErrorReply}})
 trend_router.add_api_route("/{_id}", trend_v1_routes.delete_trend, methods=["DELETE"], response_model=DeleteTrend,
                            responses={500: {"model": ErrorReply}})
+trend_router.add_api_route("/metrics/{_id}", trend_v1_routes.list_trend_metrics, methods=["GET"],
+                           response_model=TrendMetrics, responses={500: {"model": ErrorReply}})
 trend_prefix = APIRouter()
 trend_prefix.include_router(trend_router, prefix="/trends")
 
