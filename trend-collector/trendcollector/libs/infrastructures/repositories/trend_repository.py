@@ -7,7 +7,7 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.exc import NoResultFound, OperationalError
 from sqlalchemy.orm import Session, scoped_session, sessionmaker
 
-from ...models import Trend, WoeidRawTrend
+from ...models import TrendSummary
 from .schemas import TrendTable
 from ...services.accessor import TrendAccessor
 from ...services.custom_exception import NoTrendRecord, DisconnectionDB, SEARCH_ERROR, UPDATE_ERROR, DELETE_ERROR
@@ -26,11 +26,14 @@ class TrendRepository(TrendAccessor):
         self.engine = engine
         self.session_factory = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=self.engine))
 
-    def get(self, _id: int) -> Trend:
+    def get(self, _id: int) -> TrendSummary:
         session = self.session_factory()
         try:
-            record: TrendTable = session.query(TrendTable).filter(TrendTable.id == _id).one()
-            return Trend(_id=record.id, name=record.name, query=record.query, tweet_volume=record.tweet_volume)
+            trend = session.query(
+                TrendTable.id, TrendTable.name, TrendTable.updated_at).filter(TrendTable.id == _id).one()
+
+            return TrendSummary(_id=trend.id, name=trend.name, updated_at=trend.updated_at)
+
         except NoResultFound as e:
             raise NoTrendRecord(
                 HTTPStatus.BAD_REQUEST, SEARCH_ERROR, list(e.args)
@@ -42,11 +45,15 @@ class TrendRepository(TrendAccessor):
         finally:
             session.close()
 
-    def list(self, page: int, counts: int) -> list[Trend]:
+    def list(self, page: int, counts: int) -> list[TrendSummary]:
         session: Session = self.session_factory()
         try:
-            resp = session.query(TrendTable).offset((page - 1) * counts).limit(counts).all()
-            return [Trend(_id=t.id, name=t.name, query=t.query, tweet_volume=t.tweet_volume) for t in resp]
+            trends = session.query(TrendTable).offset((page - 1) * counts).limit(counts).all()
+
+            if len(trends) <= 0:
+                raise NoResultFound("No row was found when one was required")
+
+            return [TrendSummary(_id=t.id, name=t.name, updated_at=t.updated_at) for t in trends]
         except OperationalError as e:
             raise DisconnectionDB(
                 HTTPStatus.INTERNAL_SERVER_ERROR, f"{SEARCH_ERROR}: {FAILED_FETCH_TRENDS}", list(e.args)

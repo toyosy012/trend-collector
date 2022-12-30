@@ -23,10 +23,10 @@ class TwitterAccountAccessor(metaclass=abc.ABCMeta):
 
 class TrendAccessor(metaclass=abc.ABCMeta):
     @abc.abstractmethod
-    def list(self, page: int, counts: int) -> list[Trend]: pass
+    def get(self, _id: int) -> TrendSummary: pass
 
     @abc.abstractmethod
-    def get(self, _id: int) -> Trend: pass
+    def list(self, page: int, counts: int) -> List[TrendSummary]: pass
 
     @abc.abstractmethod
     def upsert(self, trends: List[WoeidRawTrend]) -> bool: pass
