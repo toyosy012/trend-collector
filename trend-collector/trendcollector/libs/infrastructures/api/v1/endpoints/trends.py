@@ -13,12 +13,12 @@ class TrendRoutes:
 
     async def get_trend(self, _id: int):
         resp = self.collector.get_trend(_id)
-        return TwitterTrend(id=resp.id, name=resp.name, query=resp.query, tweet_volume=resp.tweet_volume)
+        return TrendSummary(id=resp.id, name=resp.name, updated_at=resp.updated_at)
 
     async def list_trend(self, page: Union[int, None] = 1, counts: Union[int, None] = 20):
         resp = self.collector.list_trends(page, counts)
-        return TwitterTrendsReply(
-            result=[TwitterTrend(id=t.id, name=t.name, query=t.query, tweet_volume=t.tweet_volume) for t in resp],
+        return TrendSummaries(
+            result=[TrendSummary(id=t.id, name=t.name, updated_at=t.updated_at) for t in resp],
             length=len(resp)
         )
 
