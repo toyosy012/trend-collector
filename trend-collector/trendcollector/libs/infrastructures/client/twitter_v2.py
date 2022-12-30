@@ -5,7 +5,7 @@ from logging import Logger
 import tweepy
 from tweepy.client import Response
 
-from ...models import TwitterAccount, WoeidRawTrend, TrendMetrics, TrendVolume, TrendQuery
+from ...models import TwitterAccount, InputRawTrend, TrendMetrics, TrendVolume, TrendQuery
 from ...services import client
 from ...services.custom_exception import Timeout, TwitterBadRequest, TwitterUnAuthorized, TwitterForbidden, FETCH_ERROR
 
@@ -65,10 +65,13 @@ class TwitterV2(client.Twitter):
             raise Timeout(
                 HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_ACCOUNT}", list(e.args))
 
-    def list_trends(self, woeid: int) -> list[WoeidRawTrend]:
+    def list_trends(self, woeid: int) -> [InputRawTrend]:
         try:
             resp = self.api.get_place_trends(woeid)[0]['trends']
-            return [WoeidRawTrend(name=t["name"], query=t["query"], tweet_volume=t["tweet_volume"]) for t in resp]
+            return [InputRawTrend(name=t["name"], query=t["query"]) for t in resp]
+        except tweepy.errors.BadRequest as e:
+            raise TwitterBadRequest(
+                HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_TRENDS}", e.api_messages)
         except tweepy.Unauthorized as e:
             raise TwitterUnAuthorized(
                 HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_TRENDS}", e.api_messages)
