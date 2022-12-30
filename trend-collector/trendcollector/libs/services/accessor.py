@@ -1,7 +1,7 @@
 import abc
 from typing import List
 
-from ..models.twitter import TrendSummary, TwitterAccount, WoeidRawTrend
+from ..models.twitter import InputRawTrend, TrendSummary, TwitterAccount
 
 TWITTER_ACCOUNTS = "twitter_accounts"
 FAILED_FETCH_ACCOUNT = "アカウントの取得に失敗"
@@ -29,7 +29,7 @@ class TrendAccessor(metaclass=abc.ABCMeta):
     def list(self, page: int, counts: int) -> List[TrendSummary]: pass
 
     @abc.abstractmethod
-    def upsert(self, trends: List[WoeidRawTrend]) -> bool: pass
+    def insert_trends(self, trends: List[InputRawTrend]) -> bool: pass
 
     @abc.abstractmethod
     def delete(self, _id: int) -> bool: pass

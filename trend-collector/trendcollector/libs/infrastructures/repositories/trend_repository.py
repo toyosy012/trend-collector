@@ -7,7 +7,7 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.exc import NoResultFound, OperationalError
 from sqlalchemy.orm import Session, scoped_session, sessionmaker
 
-from ...models import TrendSummary
+from ...models import InputRawTrend, TrendSummary
 from .schemas import TrendTable
 from ...services.accessor import TrendAccessor
 from ...services.custom_exception import NoTrendRecord, DisconnectionDB, SEARCH_ERROR, UPDATE_ERROR, DELETE_ERROR
@@ -63,9 +63,8 @@ class TrendRepository(TrendAccessor):
 
     # Warning: when using `insert on duplicate key update` & `auto_increment` together,
     # ID-like increments will increase rapidly!
-    # https://mariadb.com/kb/en/auto_increment-on-insert-on-duplicate-key-update/
-    def upsert(self, trends: List[WoeidRawTrend]) -> bool:
-        insert_stmt = mysql.insert(TrendTable).values([
+    def insert_trends(self, trends: List[InputRawTrend]) -> bool:
+        insert_stmt = mysql.insert(TrendTable).prefix_with('IGNORE').values([
             dict(
                 name=t.name,
                 query=t.query,
