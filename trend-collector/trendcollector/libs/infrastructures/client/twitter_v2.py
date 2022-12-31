@@ -2,6 +2,7 @@ from datetime import datetime
 from http import HTTPStatus
 from logging import Logger
 
+from injector import inject, singleton
 import tweepy
 from tweepy.client import Response
 
@@ -13,16 +14,14 @@ FAILED_FETCH_ACCOUNT = "自身のアカウントの取得に失敗"
 FAILED_FETCH_TRENDS = "トレンドリストの取得に失敗"
 FAILED_FETCH_TREND_METRICS = "トレンドメトリクスの取得に失敗"
 
-class TwitterUnAuthorized(CustomException):
-    def __init__(self, code: int, message: str, details: list[str]):
-        super().__init__(code, message, details)
 
-
+@singleton
 class TwitterV2(client.Twitter):
     api: tweepy.API
     client: tweepy.Client
     logger: Logger
 
+    @inject
     def __init__(
             self,
             bearer_token: str,
