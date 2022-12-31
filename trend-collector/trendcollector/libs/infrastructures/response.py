@@ -3,8 +3,7 @@ from fastapi import Request, Response
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
-from starlette.middleware.base import (BaseHTTPMiddleware,
-                                       RequestResponseEndpoint)
+from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
 from ..infrastructures.conf import *
 from ..services import APIErrorResponse
@@ -15,8 +14,8 @@ class Token(BaseModel):
 
 
 class Account(BaseModel):
-    id: int = Field(None, example=1)
-    account_id: int = Field(None, example=1000000000000000)
+    id: int = Field(None, example=RECORD_ID)
+    account_id: int = Field(None, example=TWITTER_ACCOUNT_ID)
     name: str = Field(None, example=DISPLAY_NAME)
     display_name: str = Field(None, example=USER_NAME)
 
@@ -83,10 +82,9 @@ class AccountsReply(BaseModel):
     )
 
 
-class TwitterTrendsReply(BaseModel):
-    result: list[TwitterTrend] = Field(
-        None, title="Trends", example=[TwitterTrend(id=0, name=TREND_NAME, query=TREND_QUERY, tweet_volume=0)])
-    length: int = Field(None, title="Length", example=1)
+class ErrorReply(BaseModel):
+    message: str = Field(None, example="エラーが発生しました")
+    request_id: str = Field(None, example="12345678-1234-5678-1234-567812345678")
 
 
 class HttpErrorMiddleware(BaseHTTPMiddleware):
