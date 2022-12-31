@@ -51,6 +51,9 @@ class TwitterV2(client.Twitter):
         try:
             resp: Response = self.client.get_user(id=account_id)
             return TwitterAccount(_id, resp.data["id"], resp.data["name"], resp.data["username"])
+        except tweepy.errors.BadRequest as e:
+            raise TwitterBadRequest(
+                HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_ACCOUNT}", e.api_messages)
         except tweepy.Unauthorized as e:
             raise TwitterUnAuthorized(
                 HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_ACCOUNT}", e.api_messages)
