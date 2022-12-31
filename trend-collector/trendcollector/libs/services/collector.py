@@ -35,6 +35,9 @@ class CollectorSvc(metaclass=abc.ABCMeta):
     ) -> TrendMetrics: pass
 
     @abc.abstractmethod
+    def insert_trends(self, woeid: int) -> bool: pass
+
+    @abc.abstractmethod
     def delete_trend(self, trend: int) -> bool: pass
 
 
@@ -75,6 +78,10 @@ class TwitterCollector(CollectorSvc):
         query = TrendQuery(trend_id, trend.name)
 
         return self.twitter_cli.list_trend_metrics(query, start_time, end_time, granularity)
+
+    def insert_trends(self, woeid: int) -> bool:
+        trends: list[InputRawTrend] = self.twitter_cli.list_trends(woeid)
+        return self.trend_repo.insert_trends(trends)
 
     def delete_trend(self, _id: int) -> bool:
         return self.trend_repo.delete(_id)
