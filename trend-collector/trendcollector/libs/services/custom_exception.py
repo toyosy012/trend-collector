@@ -11,6 +11,26 @@ class CustomException(Exception):
         self.details = details
 
 
+class TwitterException(CustomException):
+    def __init__(self, code: int, message: str, details: list[str]):
+        super().__init__(code, message, details)
+
+
+class TwitterBadRequest(TwitterException):
+    def __init__(self, code: int, message: str, details: list[str]):
+        super().__init__(code, message, details)
+
+
+class TwitterUnAuthorized(CustomException):
+    def __init__(self, code: int, message: str, details: list[str]):
+        super().__init__(code, message, details)
+
+
+class TwitterForbidden(TwitterException):
+    def __init__(self, code: int, message: str, details: list[str]):
+        super().__init__(code, message, details)
+
+
 class IntervalServerException(CustomException):
     def __init__(self, code: int, message: str, details: list[str]):
         super().__init__(code, message, details)
