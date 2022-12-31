@@ -3,8 +3,14 @@ from datetime import datetime
 from fastapi import Path, Query
 from typing import Union
 
-from ....response import DeleteTrend, TrendMetrics, TrendSummary, TrendSummaries, TrendVolume
+from pydantic import BaseModel
+
+from ....response import DeleteTrend, TrendCommandResult, TrendMetrics, TrendSummary, TrendSummaries, TrendVolume
 from .....services.collector import MediaCollectorSvc
+
+
+class TwitterWoeid(BaseModel):
+    woeid: int
 
 
 class TrendRoutes:
@@ -34,6 +40,10 @@ class TrendRoutes:
         volumes = [TrendVolume(volume=v.volume, start=v.start, end=v.end) for v in trend_detail.volumes]
         return TrendMetrics(
             id=trend_detail.id, name=trend_detail.name, total=trend_detail.total, volumes=volumes)
+
+    async def insert_trend(self, body: TwitterWoeid) -> TrendCommandResult:
+        result = self.collector.insert_trends(body.woeid)
+        return TrendCommandResult(success=result)
 
     async def delete_trend(self, _id: int = Path(gt=0)):
         resp = self.collector.delete_trend(_id)
