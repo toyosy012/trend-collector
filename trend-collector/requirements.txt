@@ -26,6 +26,8 @@ idna==3.4
     # via
     #   anyio
     #   requests
+injector==0.20.1
+    # via -r requirements.in
 isort==5.11.3
     # via -r requirements.in
 oauthlib==3.2.2

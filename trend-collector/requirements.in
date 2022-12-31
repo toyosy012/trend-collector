@@ -7,3 +7,4 @@ PyMySQL
 isort
 pylogrus
 cryptography
+injector
