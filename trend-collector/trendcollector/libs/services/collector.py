@@ -1,13 +1,14 @@
 import abc
 
 from datetime import datetime
+from typing import Union
 
-from ..models import TrendMetrics, TwitterAccount, TrendQuery, InputRawTrend
+from ..models import TrendMetrics, TrendSummary, TwitterAccount, TrendQuery, InputRawTrend
 from ..services.client import Twitter
 from .accessor import TrendAccessor, TwitterAccountAccessor
 
 
-class CollectorSvc(metaclass=abc.ABCMeta):
+class MediaCollectorSvc(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def get_me(self) -> TwitterAccount: pass
 
@@ -41,7 +42,7 @@ class CollectorSvc(metaclass=abc.ABCMeta):
     def delete_trend(self, trend: int) -> bool: pass
 
 
-class TwitterCollector(CollectorSvc):
+class TwitterCollector(MediaCollectorSvc):
 
     def __init__(self, trend_repo: TrendAccessor, twitter_accessor_repo: TwitterAccountAccessor, twitter_cli: Twitter):
         self.trend_repo = trend_repo
