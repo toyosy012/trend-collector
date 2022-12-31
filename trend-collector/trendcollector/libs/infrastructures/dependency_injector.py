@@ -12,7 +12,7 @@ from .conf import Environment
 from ..services import TrendAccessor, Twitter, TwitterAccountAccessor
 
 
-class TwitterTokens:
+class Authentications:
     def __init__(
             self,
             bearer_token: str,
@@ -32,13 +32,14 @@ def bind_env(binder: Binder):
     env = Environment()
     binder.bind(Environment, env)
     binder.bind(
-        TwitterTokens,
-        TwitterTokens(
+        Authentications,
+        Authentications(
             env.bearer_token,
             env.consumer_key,
             env.consumer_secret,
             env.access_token,
-            env.access_token_secret)
+            env.access_token_secret
+        )
     )
 
 
@@ -53,11 +54,11 @@ def create_media_collector(
     return _bind_media_collector
 
 
-class TwitterTokensInjector(Module):
+class TwitterAuthInjector(Module):
     @singleton
     @provider
-    def provide(self, env: Environment) -> TwitterTokens:
-        return TwitterTokens(
+    def provide(self, env: Environment) -> Authentications:
+        return Authentications(
             env.bearer_token, env.consumer_key, env.consumer_secret, env.access_token, env.access_token_secret)
 
 

@@ -6,6 +6,7 @@ from injector import inject, singleton
 import tweepy
 from tweepy.client import Response
 
+from ..dependency_injector import Authentications
 from ...models import TwitterAccount, InputRawTrend, TrendMetrics, TrendVolume, TrendQuery
 from ...services import client
 from ...services.custom_exception import Timeout, TwitterBadRequest, TwitterUnAuthorized, TwitterForbidden, FETCH_ERROR
@@ -22,18 +23,14 @@ class TwitterV2(client.Twitter):
     logger: Logger
 
     @inject
-    def __init__(
-            self,
-            bearer_token: str,
-            consumer_key: str, consumer_secret: str,
-            access_token: str, access_token_secret: str):
+    def __init__(self, auths: Authentications):
         self.client = tweepy.Client(
-            bearer_token=bearer_token,
-            consumer_key=consumer_key, consumer_secret=consumer_secret,
-            access_token=access_token, access_token_secret=access_token_secret
+            bearer_token=auths.bearer_token,
+            consumer_key=auths.consumer_key, consumer_secret=auths.consumer_secret,
+            access_token=auths.access_token, access_token_secret=auths.access_token_secret
         )
-        auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-        auth.set_access_token(access_token, access_token_secret)
+        auth = tweepy.OAuthHandler(auths.consumer_key, auths.consumer_secret)
+        auth.set_access_token(auths.access_token, auths.access_token_secret)
         self.api = tweepy.API(auth)
 
     def get_me(self) -> TwitterAccount:
