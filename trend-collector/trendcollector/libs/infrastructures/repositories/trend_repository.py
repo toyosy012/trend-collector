@@ -61,24 +61,20 @@ class TrendRepository(TrendAccessor):
         finally:
             session.close()
 
-    # Warning: when using `insert on duplicate key update` & `auto_increment` together,
+    # Warning: when using `insert prefix_with IGNORE` & `auto_increment` together,
     # ID-like increments will increase rapidly!
     def insert_trends(self, trends: List[InputRawTrend]) -> bool:
         insert_stmt = mysql.insert(TrendTable).prefix_with('IGNORE').values([
             dict(
                 name=t.name,
                 query=t.query,
-                tweet_volume=t.tweet_volume,
             )
             for t in trends
         ])
-        upsert_stmt = insert_stmt.on_duplicate_key_update(
-            tweet_volume=insert_stmt.inserted.tweet_volume,
-        )
 
         session: Session = self.session_factory()
         try:
-            session.execute(upsert_stmt)
+            session.execute(insert_stmt)
             session.commit()
             return True
         except OperationalError as e:
