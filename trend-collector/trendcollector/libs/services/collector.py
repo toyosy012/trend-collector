@@ -1,11 +1,15 @@
 import abc
 
-from ..models import Trend, TwitterAccount, WoeidRawTrend
+from datetime import datetime
+from injector import inject, singleton
+from typing import Union
+
+from ..models import TrendMetrics, TrendSummary, TwitterAccount, TrendQuery, InputRawTrend
 from ..services.client import Twitter
 from .accessor import TrendAccessor, TwitterAccountAccessor
 
 
-class CollectorSvc(metaclass=abc.ABCMeta):
+class MediaCollectorSvc(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def get_me(self) -> TwitterAccount: pass
 
@@ -22,20 +26,27 @@ class CollectorSvc(metaclass=abc.ABCMeta):
     def update_account(self, account_id: int) -> TwitterAccount: pass
 
     @abc.abstractmethod
-    def get_trend(self, _id: int) -> Trend: pass
+    def get_trend(self, _id: int) -> TrendSummary: pass
 
     @abc.abstractmethod
-    def list_trends(self, page: int, counts: int) -> list[Trend]: pass
+    def list_trends(self, page: int, counts: int) -> list[TrendSummary]: pass
 
     @abc.abstractmethod
-    def upsert_trends(self, woeid: int) -> list[Trend]: pass
+    def list_trend_metrics(
+            self, trend_id: int, start_time: datetime, end_time: datetime, granularity: Union[str | None]
+    ) -> TrendMetrics: pass
+
+    @abc.abstractmethod
+    def insert_trends(self, woeid: int) -> bool: pass
 
     @abc.abstractmethod
     def delete_trend(self, trend: int) -> bool: pass
 
 
-class TwitterCollector(CollectorSvc):
+@singleton
+class TwitterCollector(MediaCollectorSvc):
 
+    @inject
     def __init__(self, trend_repo: TrendAccessor, twitter_accessor_repo: TwitterAccountAccessor, twitter_cli: Twitter):
         self.trend_repo = trend_repo
         self.twitter_account_repo = twitter_accessor_repo
@@ -59,15 +70,22 @@ class TwitterCollector(CollectorSvc):
         account = self.twitter_cli.get_account(_id, old.account_id)
         return self.twitter_account_repo.update_account(account)
 
-    def get_trend(self, _id: int) -> Trend:
+    def get_trend(self, _id: int) -> TrendSummary:
         return self.trend_repo.get(_id)
 
-    def list_trends(self, page: int, counts: int) -> list[Trend]:
+    def list_trends(self, page: int, counts: int) -> list[TrendSummary]:
         return self.trend_repo.list(page, counts)
 
-    def upsert_trends(self, woeid: int) -> bool:
-        trends: list[WoeidRawTrend] = self.twitter_cli.list_trends(woeid)
-        return self.trend_repo.upsert(trends)
+    def list_trend_metrics(self, trend_id: int,
+                           start_time: datetime, end_time: datetime, granularity: str) -> TrendMetrics:
+        trend = self.trend_repo.get(trend_id)
+        query = TrendQuery(trend_id, trend.name)
+
+        return self.twitter_cli.list_trend_metrics(query, start_time, end_time, granularity)
+
+    def insert_trends(self, woeid: int) -> bool:
+        trends: list[InputRawTrend] = self.twitter_cli.list_trends(woeid)
+        return self.trend_repo.insert_trends(trends)
 
     def delete_trend(self, _id: int) -> bool:
         return self.trend_repo.delete(_id)
