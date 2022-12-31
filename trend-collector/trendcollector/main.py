@@ -90,6 +90,8 @@ twitter_account_prefix.include_router(twitter_account_router, prefix="/accounts"
 trend_router = APIRouter()
 trend_v1_routes = TrendRoutes(twitter_svc)
 trend_router.add_api_route("", trend_v1_routes.list_trend, methods=["GET"], response_model=TrendSummaries)
+trend_router.add_api_route("", trend_v1_routes.insert_trend, methods=["POST"], response_model=TrendCommandResult,
+                           responses={500: {"model": ErrorReply}})
 trend_router.add_api_route("/{_id}", trend_v1_routes.get_trend, methods=["GET"], response_model=TrendSummary)
 trend_router.add_api_route("/{_id}", trend_v1_routes.delete_trend, methods=["DELETE"], response_model=DeleteTrend,
                            responses={500: {"model": ErrorReply}})
