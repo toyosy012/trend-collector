@@ -40,7 +40,7 @@ class TrendSummaries(BaseModel):
     length: int = Field(None, title="Length", example=1)
 
 
-class UpsertTrends(BaseModel):
+class TrendCommandResult(BaseModel):
     success: bool = Field(None, example=True)
 
 
