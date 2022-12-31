@@ -1,63 +1,31 @@
 import uvicorn
 from fastapi import APIRouter, Depends, FastAPI
-from fastapi.security import OAuth2PasswordBearer
-from sqlalchemy.pool import QueuePool
+from injector import Injector
 
-from libs.infrastructures import TrendRepository, TwitterAccountRepository
-from libs.infrastructures.api.v1.endpoints import TrendRoutes, TwitterAccountRoutes
+from libs.infrastructures import (bind_env, create_media_collector, LoggingInjector,
+                                  TwitterAuthInjector, TrendRepository, TwitterAccountRepository,
+                                  MediaCollectorDependenciesInjector, ORMEngineInjector)
+from libs.infrastructures.api.v1.endpoints import TwitterAccountRoutes, TrendRoutes
 from libs.infrastructures.client.twitter_v2 import TwitterV2
 from libs.infrastructures.logger import LogCustomizer
 from libs.infrastructures.response import (TrendMetrics, HttpErrorMiddleware, AccountsReply, ErrorReply,
                                            AccountReply, TrendSummaries, DeleteTrend, TrendSummary)
 from libs.services.collector import TwitterCollector
 
-env = Environment()
-
-try:
-    engine = sqlalchemy.create_engine(
-        # mysql+pymysql://<db_user>:<db_pass>@<db_host>:<db_port>/<db_name>
-        sqlalchemy.engine.url.URL.create(
-            drivername="mysql+pymysql",
-            username=env.db_user,
-            password=env.db_pass,
-            database=env.db_name,
-            host=env.host,
-            port=env.port,
-        ),
-        # 複数のリポジトリで使い回すので多めにコネクションをプールできるようにする
-        poolclass=QueuePool,
-        pool_size=10,
-        max_overflow=20,
-        pool_pre_ping=True
-    )
-    Base.metadata.create_all(engine)
-
-# DBコネクションの切断などで切れた場合に捕捉するコード
-# TODO logging後にシャットダウンして通知しないと気づかない
-except ConnectionRefusedError as e:
-    logging.fatal(e)
-    sys.exit(1)
-except sqlalchemy.exc.OperationalError as e:
-    logging.fatal(e)
-    sys.exit(1)
-except RuntimeError as e:
-    logging.fatal(e)
-    sys.exit(1)
-
-
 app = FastAPI()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-twitter_v2_cli = TwitterV2(
-    env.bearer_token,
-    env.consumer_key, env.consumer_secret,
-    env.access_token, env.access_token_secret,
+
+orm_injector = Injector([bind_env, ORMEngineInjector()])
+twitter_tokens_injector = Injector([bind_env, TwitterAuthInjector])
+media_collector_binder = create_media_collector(
+    orm_injector.get(TrendRepository),
+    orm_injector.get(TwitterAccountRepository),
+    twitter_tokens_injector.get(TwitterV2)
 )
-trend_repo = TrendRepository(engine)
-twitter_account_repo = TwitterAccountRepository(engine)
+media_injector = Injector([media_collector_binder, MediaCollectorDependenciesInjector()])
+twitter_svc = media_injector.get(TwitterCollector)
 
-twitter_svc = TwitterCollector(trend_repo, twitter_account_repo, twitter_v2_cli)
+
 twitter_account_v1_routes = TwitterAccountRoutes(twitter_svc)
-
 twitter_account_router = APIRouter()
 twitter_account_router.add_api_route("", twitter_account_v1_routes.list_accounts, methods=["GET"],
                                      response_model=AccountsReply,
@@ -82,6 +50,7 @@ twitter_account_router.add_api_route("/update/{_id}", twitter_account_v1_routes.
                                      })
 twitter_account_prefix = APIRouter()
 twitter_account_prefix.include_router(twitter_account_router, prefix="/accounts")
+app.include_router(twitter_account_prefix, prefix="/v1")
 
 trend_router = APIRouter()
 trend_v1_routes = TrendRoutes(twitter_svc)
@@ -97,13 +66,10 @@ trend_prefix = APIRouter()
 trend_prefix.include_router(trend_router, prefix="/trends")
 app.include_router(trend_prefix, prefix="/v1")
 
-
-@app.get("/auth", response_model=Token)
-async def auth(token: str = Depends(oauth2_scheme)) -> Token:
-    return Token(token=token)
-
 # config middlewares
-HttpLoggingHandler = create_logging_handler(config_logger(env.result_log))
+logging_injector = Injector([bind_env, LoggingInjector()])
+logger = logging_injector.get(LogCustomizer)
+HttpLoggingHandler = logger.create_logging_handler()
 app.add_middleware(HttpLoggingHandler)
 app.add_middleware(HttpErrorMiddleware)
 
