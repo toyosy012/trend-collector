@@ -1,5 +1,5 @@
 import uvicorn
-from fastapi import APIRouter, Depends, FastAPI
+from fastapi import APIRouter, FastAPI
 from injector import Injector
 
 from libs.infrastructures import (bind_env, create_media_collector, LoggingInjector,
@@ -9,7 +9,7 @@ from libs.infrastructures.api.v1.endpoints import TwitterAccountRoutes, TrendRou
 from libs.infrastructures.client.twitter_v2 import TwitterV2
 from libs.infrastructures.logger import LogCustomizer
 from libs.infrastructures.response import (TrendMetrics, HttpErrorMiddleware, AccountsReply, ErrorReply,
-                                           AccountReply, TrendSummaries, DeleteTrend, TrendSummary)
+                                           AccountReply, TrendCommandResult, TrendSummaries, DeleteTrend, TrendSummary)
 from libs.services.collector import TwitterCollector
 
 app = FastAPI()
