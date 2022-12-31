@@ -1,6 +1,7 @@
 import abc
 
 from datetime import datetime
+from injector import inject, singleton
 from typing import Union
 
 from ..models import TrendMetrics, TrendSummary, TwitterAccount, TrendQuery, InputRawTrend
@@ -42,8 +43,10 @@ class MediaCollectorSvc(metaclass=abc.ABCMeta):
     def delete_trend(self, trend: int) -> bool: pass
 
 
+@singleton
 class TwitterCollector(MediaCollectorSvc):
 
+    @inject
     def __init__(self, trend_repo: TrendAccessor, twitter_accessor_repo: TwitterAccountAccessor, twitter_cli: Twitter):
         self.trend_repo = trend_repo
         self.twitter_account_repo = twitter_accessor_repo
