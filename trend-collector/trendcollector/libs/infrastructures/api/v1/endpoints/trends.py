@@ -14,15 +14,15 @@ class TwitterWoeid(BaseModel):
 
 
 class TrendRoutes:
-    def __init__(self, collector: CollectorSvc):
-        self.collector = collector
+    def __init__(self, collector: MediaCollectorSvc):
+        self.media_collector = collector
 
     async def get_trend(self, _id: int = Path(gt=0)) -> TrendSummary:
-        resp = self.collector.get_trend(_id)
+        resp = self.media_collector.get_trend(_id)
         return TrendSummary(id=resp.id, name=resp.name, updated_at=resp.updated_at)
 
     async def list_trend(self, page: Union[int, None] = 1, counts: Union[int, None] = 20) -> TrendSummaries:
-        resp = self.collector.list_trends(page, counts)
+        resp = self.media_collector.list_trends(page, counts)
         return TrendSummaries(
             result=[TrendSummary(id=t.id, name=t.name, updated_at=t.updated_at) for t in resp],
             length=len(resp)
@@ -36,15 +36,15 @@ class TrendRoutes:
             granularity: Union[str, None] = Query("hour", regex="^(minute|hour|day)$")
     ) -> TrendMetrics:
 
-        trend_detail = self.collector.list_trend_metrics(_id, start_time_utc, end_time_utc, granularity)
+        trend_detail = self.media_collector.list_trend_metrics(_id, start_time_utc, end_time_utc, granularity)
         volumes = [TrendVolume(volume=v.volume, start=v.start, end=v.end) for v in trend_detail.volumes]
         return TrendMetrics(
             id=trend_detail.id, name=trend_detail.name, total=trend_detail.total, volumes=volumes)
 
     async def insert_trend(self, body: TwitterWoeid) -> TrendCommandResult:
-        result = self.collector.insert_trends(body.woeid)
+        result = self.media_collector.insert_trends(body.woeid)
         return TrendCommandResult(success=result)
 
     async def delete_trend(self, _id: int = Path(gt=0)):
-        resp = self.collector.delete_trend(_id)
+        resp = self.media_collector.delete_trend(_id)
         return DeleteTrend(success=resp)
