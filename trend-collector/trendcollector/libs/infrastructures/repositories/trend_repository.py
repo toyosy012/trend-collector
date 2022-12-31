@@ -2,6 +2,7 @@ from logging import Logger
 from http import HTTPStatus
 from typing import List
 
+from injector import inject, singleton
 from sqlalchemy.dialects import mysql
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import NoResultFound, OperationalError
@@ -18,10 +19,12 @@ FAILED_FETCH_TRENDS = "トレンドリストデータは取得に失敗"
 FAILED_UPDATE_TRENDS = "トレンドデータの更新に失敗"
 
 
+@singleton
 class TrendRepository(TrendAccessor):
     engine: Engine
     logger: Logger
 
+    @inject
     def __init__(self, engine: Engine):
         self.engine = engine
         self.session_factory = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=self.engine))
