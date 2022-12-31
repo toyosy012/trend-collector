@@ -1,7 +1,3 @@
-import logging
-import sys
-
-import sqlalchemy
 import uvicorn
 from fastapi import APIRouter, Depends, FastAPI
 from fastapi.security import OAuth2PasswordBearer
