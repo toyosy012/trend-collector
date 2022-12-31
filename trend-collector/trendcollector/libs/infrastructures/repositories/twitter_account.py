@@ -1,6 +1,7 @@
 from http import HTTPStatus
 from logging import Logger
 
+from injector import inject, singleton
 from sqlalchemy.engine.base import Engine
 from sqlalchemy.exc import NoResultFound, OperationalError
 from sqlalchemy.orm import Session, scoped_session, sessionmaker
@@ -17,10 +18,12 @@ FAILED_FETCH_ACCOUNTS = "Twitterアカウントリストデータは取得に失
 FAILED_UPDATE_ACCOUNT = "Twitterアカウントデータの更新に失敗"
 
 
+@singleton
 class TwitterAccountRepository(TwitterAccountAccessor):
     engine: Engine
     logger: Logger
 
+    @inject
     def __init__(self, engine: Engine):
         self.engine = engine
         self.session_factory = scoped_session(sessionmaker(autocommit=True, autoflush=True, bind=self.engine))
