@@ -15,7 +15,7 @@ class Token(BaseModel):
 
 class Account(BaseModel):
     id: int = Field(None, example=RECORD_ID)
-    account_id: int = Field(None, example=TWITTER_ACCOUNT_ID)
+    account_id: str = Field(None, example=TWITTER_ACCOUNT_ID)
     name: str = Field(None, example=DISPLAY_NAME)
     display_name: str = Field(None, example=USER_NAME)
 
