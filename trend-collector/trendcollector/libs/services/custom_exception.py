@@ -16,6 +16,11 @@ class TwitterException(CustomException):
         super().__init__(code, message, details)
 
 
+class TwitterNotFoundAccount(TwitterException):
+    def __init__(self, code: int, message: str, details: list[str]):
+        super().__init__(code, message, details)
+
+
 class TwitterBadRequest(TwitterException):
     def __init__(self, code: int, message: str, details: list[str]):
         super().__init__(code, message, details)
