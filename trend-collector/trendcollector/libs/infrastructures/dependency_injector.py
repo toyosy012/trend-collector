@@ -43,15 +43,20 @@ def bind_env(binder: Binder):
     )
 
 
-def create_media_collector(
-        trend_accessor: TrendAccessor, twitter_account_accessor: TwitterAccountAccessor, twitter: Twitter
-) -> Callable[[Binder], None]:
+def create_media_collector(repo: TrendAccessor, cli: Twitter) -> Callable[[Binder], None]:
     def _bind_media_collector(binder: Binder) -> None:
-        binder.bind(TrendAccessor, trend_accessor)
-        binder.bind(TwitterAccountAccessor, twitter_account_accessor)
-        binder.bind(Twitter, twitter)
+        binder.bind(TrendAccessor, repo)
+        binder.bind(Twitter, cli)
 
     return _bind_media_collector
+
+
+def create_twitter_account_binder(repo: TwitterAccountAccessor, cli: Twitter) -> Callable[[Binder], None]:
+    def _bind_twitter_account(binder: Binder) -> None:
+        binder.bind(TwitterAccountAccessor, repo)
+        binder.bind(Twitter, cli)
+
+    return _bind_twitter_account
 
 
 class TwitterAuthInjector(Module):
@@ -105,10 +110,12 @@ class LoggingInjector(Module):
 class MediaCollectorDependenciesInjector(Module):
     @singleton
     @provider
-    def provide(
-            self,
-            trend_accessor: TrendAccessor,
-            twitter_account_binder: TwitterAccountAccessor,
-            twitter: Twitter
-    ) -> (TrendAccessor, TwitterAccountAccessor, Twitter):
-        return trend_accessor, twitter_account_binder, twitter
+    def provide(self, trend_accessor: TrendAccessor, twitter: Twitter) -> (TrendAccessor, Twitter):
+        return trend_accessor, twitter
+
+
+class TwitterAccountDependenciesInjector(Module):
+    @singleton
+    @provider
+    def provide(self, repo: TwitterAccountAccessor, cli: Twitter) -> (TwitterAccountAccessor, Twitter):
+        return repo, cli

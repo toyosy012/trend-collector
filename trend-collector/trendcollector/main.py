@@ -2,30 +2,38 @@ import uvicorn
 from fastapi import APIRouter, FastAPI
 from injector import Injector
 
-from libs.infrastructures import (bind_env, create_media_collector, LoggingInjector,
-                                  TwitterAuthInjector, TrendRepository, TwitterAccountRepository,
+from libs.infrastructures import (bind_env, create_twitter_account_binder, create_media_collector, LoggingInjector,
+                                  TwitterAuthInjector, TwitterAccountDependenciesInjector,
                                   MediaCollectorDependenciesInjector, ORMEngineInjector)
+from libs.infrastructures.repositories import TrendRepository, TwitterAccountRepository
 from libs.infrastructures.api.v1.endpoints import TwitterAccountRoutes, TrendRoutes
 from libs.infrastructures.client.twitter_v2 import TwitterV2
 from libs.infrastructures.logger import LogCustomizer
 from libs.infrastructures.response import (TrendMetrics, HttpErrorMiddleware, AccountsReply, ErrorReply,
                                            AccountReply, TrendCommandResult, TrendSummaries, DeleteTrend, TrendSummary)
+from libs.services.account import TwitterAccountService
 from libs.services.collector import TwitterCollector
 
 app = FastAPI()
 
 orm_injector = Injector([bind_env, ORMEngineInjector()])
 twitter_tokens_injector = Injector([bind_env, TwitterAuthInjector])
+
+twitter_account_binder = create_twitter_account_binder(
+    orm_injector.get(TwitterAccountRepository),
+    twitter_tokens_injector.get(TwitterV2),
+)
+twitter_account_injector = Injector([twitter_account_binder, TwitterAccountDependenciesInjector()])
+twitter_account_svc = twitter_account_injector.get(TwitterAccountService)
+
 media_collector_binder = create_media_collector(
     orm_injector.get(TrendRepository),
-    orm_injector.get(TwitterAccountRepository),
     twitter_tokens_injector.get(TwitterV2)
 )
 media_injector = Injector([media_collector_binder, MediaCollectorDependenciesInjector()])
-twitter_svc = media_injector.get(TwitterCollector)
+twitter_collector_svc = media_injector.get(TwitterCollector)
 
-
-twitter_account_v1_routes = TwitterAccountRoutes(twitter_svc)
+twitter_account_v1_routes = TwitterAccountRoutes(twitter_account_svc)
 twitter_account_router = APIRouter()
 twitter_account_router.add_api_route("", twitter_account_v1_routes.list_accounts, methods=["GET"],
                                      response_model=AccountsReply,
@@ -53,7 +61,7 @@ twitter_account_prefix.include_router(twitter_account_router, prefix="/accounts"
 app.include_router(twitter_account_prefix, prefix="/v1")
 
 trend_router = APIRouter()
-trend_v1_routes = TrendRoutes(twitter_svc)
+trend_v1_routes = TrendRoutes(twitter_collector_svc)
 trend_router.add_api_route("", trend_v1_routes.list_trend, methods=["GET"], response_model=TrendSummaries)
 trend_router.add_api_route("", trend_v1_routes.insert_trend, methods=["POST"], response_model=TrendCommandResult,
                            responses={500: {"model": ErrorReply}})
