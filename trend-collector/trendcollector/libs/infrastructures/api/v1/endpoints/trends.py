@@ -23,10 +23,9 @@ class TrendRoutes:
 
     async def list_trend(self, page: Union[int, None] = 1, counts: Union[int, None] = 20) -> TrendSummaries:
         resp = self.media_collector.list_trends(page, counts)
-        return TrendSummaries(
-            result=[TrendSummary(id=t.id, name=t.name, updated_at=t.updated_at) for t in resp],
-            length=len(resp)
-        )
+        trends = [TrendSummary(id=t.id, name=t.name, updated_at=t.updated_at) for t in resp] if 0 < len(resp) else []
+
+        return TrendSummaries(result=trends, length=len(trends))
 
     async def list_trend_metrics(
             self,
