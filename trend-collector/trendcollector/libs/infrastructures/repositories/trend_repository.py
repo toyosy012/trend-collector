@@ -53,10 +53,8 @@ class TrendRepository(TrendAccessor):
         try:
             trends = session.query(TrendTable).offset((page - 1) * counts).limit(counts).all()
 
-            if len(trends) <= 0:
-                raise NoResultFound("No row was found when one was required")
-
-            return [TrendSummary(_id=t.id, name=t.name, updated_at=t.updated_at) for t in trends]
+            return [
+                TrendSummary(_id=t.id, name=t.name, updated_at=t.updated_at) for t in trends] if 0 < len(trends) else []
         except OperationalError as e:
             raise DisconnectionDB(
                 HTTPStatus.INTERNAL_SERVER_ERROR, f"{SEARCH_ERROR}: {FAILED_FETCH_TRENDS}", list(e.args)
