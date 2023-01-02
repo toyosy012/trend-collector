@@ -1,0 +1,41 @@
+version: "3"
+services:
+  mysql:
+    networks:
+      trendcollector:
+    container_name: db
+    volumes:
+      - ./database/mysql/DB:/docker-entrypoint-initdb.d  #初期データをマウントする場所
+      - ./database/con.d:/etc/mysql/con.d
+    image: mysql:8.0
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASS:-invalid}
+      MYSQL_DATABASE: ${DB_NAME:-invalid}
+  trendcollector:
+    networks:
+      trendcollector:
+    container_name: web
+    image: trend-collector:latest
+    ports:
+      - '8000:8000'
+    environment:
+      ACCESS_TOKEN: ${ACCESS_TOKEN:-invalid}
+      ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET:-invalid}
+      BEARER_TOKEN: ${BEARER_TOKEN:-invalid}
+      CONSUMER_KEY: ${CONSUMER_KEY:-invalid}
+      CONSUMER_SECRET: ${CONSUMER_SECRET:-invalid}
+      DB_USER: ${DB_USER:-invalid}
+      DB_NAME: ${DB_NAME:-invalid}
+      DB_PASS: ${DB_PASS:-invalid}
+      HOST: db
+      PORT: 3306
+      RESULT_LOG: ${RESULT_LOG:-invalid}
+networks:
+  trendcollector:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.19.0.0/24
