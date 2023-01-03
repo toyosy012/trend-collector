@@ -2,6 +2,7 @@
 ## パッケージ管理
 
 [リファレンス](https://packaging.python.org/ja/latest/guides/installing-using-pip-and-virtual-environments/)
+
 [参考](https://qiita.com/ryu22e/items/ad3f8f3df30886d23661)
 
 - プロジェクトディレクトリ毎の依存関係を満たすための作業
@@ -9,24 +10,46 @@
 - pip-compileを使うことでrequirements.txtを生成
 
 ```
-# プロジェクトディレクトリ以下のpython, pipを使用するためPATHに設定
+# Enable activation when using venv
 $ source venv/bin/activate
 
-# ツールインストール
+# Install a package management tools
 $ pip install pip-tools
 Successfully installed build-0.9.0 pep517-0.13.0 pip-tools-6.11.0
 
-# 依存ファイル作成
+# Creation of requirements.txt for prod environment
+$ vi requirements.in
 $ pip-compile requirements.in
 requirements.txt
 
-# パッケージインストール
-$ pip-sync
+# Creation of requirements.txt for development environment
+$ vi requirements.in
+`-c requirements.txt` is a configuration for getting package information for the production environment into a file for 
+the development environment.
 
-# モジュールのimportパスソート
-$ isort server.py
+$ pip-compile dev-requirements.in
+dev-requirements.txt
 
-# ディレクトリ単位のimportパスソート
+# Install packages
+$ pip-sync requirements.txt dev-requirements.txt
+```
+
+## Linter
+
+```
+$ pylint `dir`
+
+# When used in conjunction with plugins for third-party libraries
+$ pylint --load-plugins pylint_pydantic `dir`
+```
+
+## Sort
+
+```
+# module import path sorting
+$ isort main.py
+
+# per-directory import path sorting
 $ isort -rc terndcollector
 ```
 
