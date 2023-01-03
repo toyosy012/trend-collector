@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: './trend-collector/trendcollector'
+        working-directory: './trendcollector'
     timeout-minutes: 3
     steps:
       - uses: actions/checkout@v1

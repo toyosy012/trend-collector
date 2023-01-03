@@ -1,11 +1,16 @@
 from datetime import datetime
+
 from fastapi import Request, Response
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
-from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
+from starlette.middleware.base import (BaseHTTPMiddleware,
+                                       RequestResponseEndpoint)
 
-from ..infrastructures.conf import *
+from ..infrastructures.conf import (DISPLAY_NAME, END_DATETIME, INPUT_DATETIME,
+                                    INPUT_DATETIME_FORMAT, RECORD_ID,
+                                    START_DATETIME, TREND_NAME, TREND_VOLUME,
+                                    TWITTER_ACCOUNT_ID, USER_NAME)
 from ..services import APIErrorResponse
 
 
