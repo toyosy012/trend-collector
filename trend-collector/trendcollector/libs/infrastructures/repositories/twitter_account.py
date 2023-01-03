@@ -8,7 +8,9 @@ from sqlalchemy.orm import Session, scoped_session, sessionmaker
 
 from ...models.twitter import TwitterAccount
 from ...services.accessor import TwitterAccountAccessor
-from ...services.custom_exception import DisconnectionDB, NoTwitterAccountRecord, SEARCH_ERROR, UPDATE_ERROR
+from ...services.custom_exception import (SEARCH_ERROR, UPDATE_ERROR,
+                                          DisconnectionDB,
+                                          NoTwitterAccountRecord)
 from ..repositories.schemas import TwitterAccountTable
 
 # https://cloud.google.com/sql/docs/mysql/manage-connections?hl=ja

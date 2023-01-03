@@ -1,12 +1,12 @@
 from datetime import datetime
-
-from fastapi import Path, Query
 from typing import Union
 
+from fastapi import Path, Query
 from pydantic import BaseModel
 
-from ....response import DeleteTrend, TrendCommandResult, TrendMetrics, TrendSummary, TrendSummaries, TrendVolume
 from .....services.collector import MediaCollectorSvc
+from ....response import (DeleteTrend, TrendCommandResult, TrendMetrics,
+                          TrendSummaries, TrendSummary, TrendVolume)
 
 
 class TwitterWoeid(BaseModel):
