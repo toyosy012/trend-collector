@@ -1,9 +1,8 @@
-from sqlalchemy import Column, DATETIME, String
+from sqlalchemy import DATETIME, Column, String
 from sqlalchemy.dialects.mysql import INTEGER as Integer
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql.expression import text
 from sqlalchemy.sql.functions import current_timestamp
-
 
 Base = declarative_base()
 

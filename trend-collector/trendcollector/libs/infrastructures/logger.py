@@ -4,10 +4,11 @@ import uuid
 from fastapi import Request, Response
 from injector import inject, singleton
 from pylogrus import JsonFormatter, PyLogrus
+from starlette.middleware.base import (BaseHTTPMiddleware,
+                                       RequestResponseEndpoint)
 from starlette.types import Message
-from starlette.middleware.base import BaseHTTPMiddleware,  RequestResponseEndpoint
 
-from ..services import CustomException, APIErrorResponse
+from ..services import APIErrorResponse, CustomException
 
 
 @singleton

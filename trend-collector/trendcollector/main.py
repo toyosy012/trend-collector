@@ -1,16 +1,24 @@
 import uvicorn
 from fastapi import APIRouter, FastAPI
 from injector import Injector
-
-from libs.infrastructures import (bind_env, create_twitter_account_binder, create_media_collector, LoggingInjector,
-                                  TwitterAuthInjector, TwitterAccountDependenciesInjector,
-                                  MediaCollectorDependenciesInjector, ORMEngineInjector)
-from libs.infrastructures.repositories import TrendRepository, TwitterAccountRepository
-from libs.infrastructures.api.v1.endpoints import TwitterAccountRoutes, TrendRoutes
+from libs.infrastructures import (LoggingInjector,
+                                  MediaCollectorDependenciesInjector,
+                                  ORMEngineInjector,
+                                  TwitterAccountDependenciesInjector,
+                                  TwitterAuthInjector, bind_env,
+                                  create_media_collector,
+                                  create_twitter_account_binder)
+from libs.infrastructures.api.v1.endpoints import (TrendRoutes,
+                                                   TwitterAccountRoutes)
 from libs.infrastructures.client.twitter_v2 import TwitterV2
 from libs.infrastructures.logger import LogCustomizer
-from libs.infrastructures.response import (TrendMetrics, HttpErrorMiddleware, AccountsReply, ErrorReply,
-                                           AccountReply, TrendCommandResult, TrendSummaries, DeleteTrend, TrendSummary)
+from libs.infrastructures.repositories import (TrendRepository,
+                                               TwitterAccountRepository)
+from libs.infrastructures.response import (AccountReply, AccountsReply,
+                                           DeleteTrend, ErrorReply,
+                                           HttpErrorMiddleware,
+                                           TrendCommandResult, TrendMetrics,
+                                           TrendSummaries, TrendSummary)
 from libs.services.account import TwitterAccountService
 from libs.services.collector import TwitterCollector
 
@@ -82,4 +90,4 @@ app.add_middleware(HttpLoggingHandler)
 app.add_middleware(HttpErrorMiddleware)
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=True)
