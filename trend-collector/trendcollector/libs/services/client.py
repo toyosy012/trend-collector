@@ -1,8 +1,7 @@
 import abc
-
 from datetime import datetime
 
-from ..models import InputRawTrend, TwitterAccount, TrendQuery, TrendMetrics
+from ..models import InputRawTrend, TrendMetrics, TrendQuery, TwitterAccount
 
 
 class Twitter(metaclass=abc.ABCMeta):
