@@ -41,13 +41,16 @@ class TwitterV2(client.Twitter):
             return TwitterAccount(0, resp.data["id"], resp.data["name"], resp.data["username"])
         except tweepy.Unauthorized as e:
             raise TwitterUnAuthorized(
-                HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_ACCOUNT}", e.api_messages)
+                HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_ACCOUNT}", e.api_messages
+            ) from e
         except tweepy.errors.Forbidden as e:
             raise TwitterForbidden(
-                HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_ACCOUNT}", e.api_messages)
+                HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_ACCOUNT}", e.api_messages
+            ) from e
         except TimeoutError as e:
             raise Timeout(
-                HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_ACCOUNT}", list(e.args))
+                HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_ACCOUNT}", list(e.args)
+            ) from e
 
     def get_account(self, _id: int, account_id: int) -> TwitterAccount:
         try:
@@ -60,16 +63,20 @@ class TwitterV2(client.Twitter):
             return TwitterAccount(_id, resp.data["id"], resp.data["name"], resp.data["username"])
         except tweepy.errors.BadRequest as e:
             raise TwitterBadRequest(
-                HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_ACCOUNT}", e.api_messages)
+                HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_ACCOUNT}", e.api_messages
+            ) from e
         except tweepy.Unauthorized as e:
             raise TwitterUnAuthorized(
-                HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_ACCOUNT}", e.api_messages)
+                HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_ACCOUNT}", e.api_messages
+            ) from e
         except tweepy.errors.Forbidden as e:
             raise TwitterForbidden(
-                HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_ACCOUNT}", e.api_messages)
+                HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_ACCOUNT}", e.api_messages
+            ) from e
         except TimeoutError as e:
             raise Timeout(
-                HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_ACCOUNT}", list(e.args))
+                HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_ACCOUNT}", list(e.args)
+            ) from e
 
     def list_trends(self, woeid: int) -> [InputRawTrend]:
         try:
@@ -77,15 +84,20 @@ class TwitterV2(client.Twitter):
             return [InputRawTrend(name=t["name"], query=t["query"]) for t in resp]
         except tweepy.errors.BadRequest as e:
             raise TwitterBadRequest(
-                HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_TRENDS}", e.api_messages)
+                HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_TRENDS}", e.api_messages
+            ) from e
         except tweepy.Unauthorized as e:
             raise TwitterUnAuthorized(
-                HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_TRENDS}", e.api_messages)
+                HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_TRENDS}", e.api_messages
+            ) from e
         except tweepy.errors.Forbidden as e:
             raise TwitterForbidden(
-                HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_TRENDS}", e.api_messages)
+                HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_TRENDS}", e.api_messages
+            ) from e
         except TimeoutError as e:
-            raise Timeout(HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_TRENDS}", list(e.args))
+            raise Timeout(
+                HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_TRENDS}", list(e.args)
+            ) from e
 
     def list_trend_metrics(
             self, query: TrendQuery, start_time: datetime, end_time: datetime, granularity: str) -> TrendMetrics:
@@ -95,19 +107,23 @@ class TwitterV2(client.Twitter):
             )
         except tweepy.errors.BadRequest as e:
             raise TwitterBadRequest(
-                HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_TREND_METRICS}", e.api_messages)
+                HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_TREND_METRICS}", e.api_messages
+            ) from e
         except tweepy.errors.Unauthorized as e:
             raise TwitterUnAuthorized(
-                HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_TREND_METRICS}", e.api_messages)
+                HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_TREND_METRICS}", e.api_messages
+            ) from e
         except tweepy.errors.Forbidden as e:
             raise TwitterBadRequest(
-                HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_TREND_METRICS}", e.api_messages)
+                HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_TREND_METRICS}", e.api_messages
+            ) from e
         except TimeoutError as e:
-            raise Timeout(HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_TRENDS}", list(e.args))
+            raise Timeout(
+                HTTPStatus.INTERNAL_SERVER_ERROR, f"{FETCH_ERROR}: {FAILED_FETCH_TRENDS}", list(e.args)
+            ) from e
         else:
             if len(volumes) <= 0:
                 return TrendMetrics(query.trend_id, query.name, 0, [])
 
             volumes = [TrendVolume(v['tweet_count'], v["start"], v["end"]) for v in volumes.data]
             return TrendMetrics(query.trend_id, query.name, len(volumes), volumes)
-
