@@ -1,5 +1,5 @@
-from logging import Logger
 from http import HTTPStatus
+from logging import Logger
 from typing import List
 
 from injector import inject, singleton
@@ -9,9 +9,11 @@ from sqlalchemy.exc import NoResultFound, OperationalError
 from sqlalchemy.orm import Session, scoped_session, sessionmaker
 
 from ...models import InputRawTrend, TrendSummary
-from .schemas import TrendTable
 from ...services.accessor import TrendAccessor
-from ...services.custom_exception import NoTrendRecord, DisconnectionDB, SEARCH_ERROR, UPDATE_ERROR, DELETE_ERROR
+from ...services.custom_exception import (DELETE_ERROR, SEARCH_ERROR,
+                                          UPDATE_ERROR, DisconnectionDB,
+                                          NoTrendRecord)
+from .schemas import TrendTable
 
 FAILED_DELETE_TREND = "トレンドデータの削除に失敗しました"
 FAILED_FETCH_TREND = "トレンドデータは取得に失敗"

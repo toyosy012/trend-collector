@@ -8,8 +8,8 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.pool import QueuePool
 
-from .conf import Environment
 from ..services import TrendAccessor, Twitter, TwitterAccountAccessor
+from .conf import Environment
 
 
 class Authentications:

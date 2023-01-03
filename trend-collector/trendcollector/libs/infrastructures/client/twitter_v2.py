@@ -2,15 +2,18 @@ from datetime import datetime
 from http import HTTPStatus
 from logging import Logger
 
-from injector import inject, singleton
 import tweepy
+from injector import inject, singleton
 from tweepy.client import Response
 
-from ..dependency_injector import Authentications
-from ...models import TwitterAccount, InputRawTrend, TrendMetrics, TrendVolume, TrendQuery
+from ...models import (InputRawTrend, TrendMetrics, TrendQuery, TrendVolume,
+                       TwitterAccount)
 from ...services import client
-from ...services.custom_exception import (Timeout, TwitterBadRequest, TwitterUnAuthorized,
-                                          TwitterForbidden, TwitterNotFoundAccount, FETCH_ERROR)
+from ...services.custom_exception import (FETCH_ERROR, Timeout,
+                                          TwitterBadRequest, TwitterForbidden,
+                                          TwitterNotFoundAccount,
+                                          TwitterUnAuthorized)
+from ..dependency_injector import Authentications
 
 FAILED_FETCH_ACCOUNT = "自身のアカウントの取得に失敗"
 FAILED_FETCH_TRENDS = "トレンドリストの取得に失敗"

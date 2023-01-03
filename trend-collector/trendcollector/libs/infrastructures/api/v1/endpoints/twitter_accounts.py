@@ -1,7 +1,7 @@
 from fastapi import Path
 
-from ....response import AccountReply, AccountsReply, Account
 from .....services.account import TwitterAccountService
+from ....response import Account, AccountReply, AccountsReply
 
 
 class TwitterAccountRoutes:
