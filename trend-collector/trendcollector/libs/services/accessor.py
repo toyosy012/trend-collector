@@ -16,7 +16,7 @@ class TwitterAccountAccessor(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def update_account(self, account: TwitterAccount) -> TwitterAccount:
+    def update_account(self, new: TwitterAccount) -> TwitterAccount:
         pass
 
     @abc.abstractmethod
