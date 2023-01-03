@@ -36,7 +36,7 @@ class TwitterAccountRepository(TwitterAccountAccessor):
             raise DisconnectionDB(
                 HTTPStatus.INTERNAL_SERVER_ERROR,
                 f"{SEARCH_ERROR}: {FAILED_FETCH_ACCOUNTS}", list(e.args)
-            )
+            ) from e
         finally:
             session.close()
         return [
@@ -58,12 +58,12 @@ class TwitterAccountRepository(TwitterAccountAccessor):
         except NoResultFound as e:
             raise NoTwitterAccountRecord(
                 HTTPStatus.BAD_REQUEST, UPDATE_ERROR, list(e.args)
-            )
+            ) from e
         except OperationalError as e:
             raise DisconnectionDB(
                 HTTPStatus.INTERNAL_SERVER_ERROR,
                 f"{UPDATE_ERROR}: {FAILED_UPDATE_ACCOUNT}", list(e.args)
-            )
+            ) from e
         finally:
             session.close()
         return TwitterAccount(n.id, n.account_id, n.name, n.display_name)
@@ -76,10 +76,10 @@ class TwitterAccountRepository(TwitterAccountAccessor):
         except NoResultFound as e:
             raise NoTwitterAccountRecord(
                 HTTPStatus.BAD_REQUEST, SEARCH_ERROR, list(e.args)
-            )
+            ) from e
         except OperationalError as e:
             raise DisconnectionDB(
                 HTTPStatus.INTERNAL_SERVER_ERROR, f"{SEARCH_ERROR}: {FAILED_FETCH_ACCOUNT}", list(e.args)
-            )
+            ) from e
         finally:
             session.close()

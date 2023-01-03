@@ -40,11 +40,11 @@ class TrendRepository(TrendAccessor):
         except NoResultFound as e:
             raise NoTrendRecord(
                 HTTPStatus.BAD_REQUEST, SEARCH_ERROR, list(e.args)
-            )
+            ) from e
         except OperationalError as e:
             raise DisconnectionDB(
                 HTTPStatus.INTERNAL_SERVER_ERROR, f"{SEARCH_ERROR}: {FAILED_FETCH_TREND}", list(e.args)
-            )
+            ) from e
         finally:
             session.close()
 
@@ -58,7 +58,7 @@ class TrendRepository(TrendAccessor):
         except OperationalError as e:
             raise DisconnectionDB(
                 HTTPStatus.INTERNAL_SERVER_ERROR, f"{SEARCH_ERROR}: {FAILED_FETCH_TRENDS}", list(e.args)
-            )
+            ) from e
         finally:
             session.close()
 
@@ -82,7 +82,7 @@ class TrendRepository(TrendAccessor):
             session.rollback()
             raise DisconnectionDB(
                 HTTPStatus.INTERNAL_SERVER_ERROR, f"{UPDATE_ERROR}: {FAILED_UPDATE_TRENDS}", list(e.args)
-            )
+            ) from e
         finally:
             session.close()
 
@@ -96,10 +96,10 @@ class TrendRepository(TrendAccessor):
         except NoResultFound as e:
             raise NoTrendRecord(
                 HTTPStatus.BAD_REQUEST, DELETE_ERROR, list(e.args)
-            )
+            ) from e
         except OperationalError as e:
             raise DisconnectionDB(
                 HTTPStatus.INTERNAL_SERVER_ERROR, f"{DELETE_ERROR}: {FAILED_DELETE_TREND}", list(e.args)
-            )
+            ) from e
         finally:
             session.close()

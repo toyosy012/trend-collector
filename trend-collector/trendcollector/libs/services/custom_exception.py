@@ -12,48 +12,39 @@ class CustomException(Exception):
 
 
 class TwitterException(CustomException):
-    def __init__(self, code: int, message: str, details: list[str]):
-        super().__init__(code, message, details)
+    """There is no need to override '__init__'."""
 
 
 class TwitterNotFoundAccount(TwitterException):
-    def __init__(self, code: int, message: str, details: list[str]):
-        super().__init__(code, message, details)
+    """There is no need to override '__init__'."""
 
 
 class TwitterBadRequest(TwitterException):
-    def __init__(self, code: int, message: str, details: list[str]):
-        super().__init__(code, message, details)
+    """There is no need to override '__init__'."""
 
 
 class TwitterUnAuthorized(CustomException):
-    def __init__(self, code: int, message: str, details: list[str]):
-        super().__init__(code, message, details)
+    """There is no need to override '__init__'."""
 
 
 class TwitterForbidden(TwitterException):
-    def __init__(self, code: int, message: str, details: list[str]):
-        super().__init__(code, message, details)
+    """There is no need to override '__init__'."""
 
 
 class IntervalServerException(CustomException):
-    def __init__(self, code: int, message: str, details: list[str]):
-        super().__init__(code, message, details)
+    """There is no need to override '__init__'."""
 
 
 class Timeout(IntervalServerException):
-    def __init__(self, code: int, message: str, details: list[str]):
-        super().__init__(code, message, details)
+    """There is no need to override '__init__'."""
 
 
 class DataBaseException(CustomException):
-    def __init__(self, code: int, message: str, details: list[str]):
-        super().__init__(code, message, details)
+    """There is no need to override '__init__'."""
 
 
 class DisconnectionDB(DataBaseException):
-    def __init__(self, code: int, message: str, details: list[str]):
-        super().__init__(code, message, details)
+    """There is no need to override '__init__'."""
 
 
 class NoTrendRecord(DataBaseException):
