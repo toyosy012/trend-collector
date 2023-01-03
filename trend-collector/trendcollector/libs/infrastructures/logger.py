@@ -53,8 +53,8 @@ class LogCustomizer:
                 try:
                     async def receive() -> Message:
                         return {"type": "http.request", "body": body}
-                    request._receive = receive
-                    result = await call_next(request)
+                    req = Request(request.scope, receive)
+                    result = await call_next(req)
                 except CustomException as e:
                     logger.withFields(
                         {
@@ -64,12 +64,12 @@ class LogCustomizer:
                             "method": request.method
                         }
                     ).exception("error")
-                    raise APIErrorResponse(e.code, e.message, request_uuid)
+                    raise APIErrorResponse(e.code, e.message, request_uuid) from e
                 else:
                     logger.withFields(
                         {
-                            "path": str(request.url.path), "uuid": request_uuid, "code": result.status_code,
-                            "user_agent": request.headers.get("User-Agent"), "method": request.method
+                            "path": str(req.url.path), "uuid": request_uuid, "code": result.status_code,
+                            "user_agent": req.headers.get("User-Agent"), "method": req.method
                         }
                     ).info("response")
                     return result
