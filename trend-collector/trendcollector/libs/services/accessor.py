@@ -12,24 +12,31 @@ FAILED_FETCH_TRENDS = "トレンドリストの取得に失敗"
 
 class TwitterAccountAccessor(metaclass=abc.ABCMeta):
     @abc.abstractmethod
-    def list_accounts(self) -> list[TwitterAccount]: pass
+    def list_accounts(self) -> list[TwitterAccount]:
+        pass
 
     @abc.abstractmethod
-    def update_account(self, account: TwitterAccount) -> TwitterAccount: pass
+    def update_account(self, account: TwitterAccount) -> TwitterAccount:
+        pass
 
     @abc.abstractmethod
-    def get_account(self, _id: int) -> TwitterAccount: pass
+    def get_account(self, _id: int) -> TwitterAccount:
+        pass
 
 
 class TrendAccessor(metaclass=abc.ABCMeta):
     @abc.abstractmethod
-    def get(self, _id: int) -> TrendSummary: pass
+    def get(self, _id: int) -> TrendSummary:
+        pass
 
     @abc.abstractmethod
-    def list(self, page: int, counts: int) -> List[TrendSummary]: pass
+    def list(self, page: int, counts: int) -> List[TrendSummary]:
+        pass
 
     @abc.abstractmethod
-    def insert_trends(self, trends: List[InputRawTrend]) -> bool: pass
+    def insert_trends(self, trends: List[InputRawTrend]) -> bool:
+        pass
 
     @abc.abstractmethod
-    def delete(self, _id: int) -> bool: pass
+    def delete(self, _id: int) -> bool:
+        pass
