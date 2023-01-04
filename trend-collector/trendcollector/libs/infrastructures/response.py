@@ -2,11 +2,13 @@ from datetime import datetime
 
 from fastapi import Request, Response
 from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 from starlette.middleware.base import (BaseHTTPMiddleware,
                                        RequestResponseEndpoint)
 
+from ..services.custom_exception import RequestParamValidation
 from ..infrastructures.conf import (DISPLAY_NAME, END_DATETIME, INPUT_DATETIME,
                                     INPUT_DATETIME_FORMAT, RECORD_ID,
                                     START_DATETIME, TREND_NAME, TREND_VOLUME,
@@ -104,3 +106,10 @@ class HttpErrorMiddleware(BaseHTTPMiddleware):
             )
         else:
             return result
+
+
+async def validation_exception_formatter(_request, exc: RequestValidationError):
+    messages: [str] = []
+    for e in exc.errors():
+        messages = messages + [f"type: {e.get('loc')[0]}, name: {e.get('loc')[1]}: {e.get('msg')}"]
+    raise RequestParamValidation(", ".join(messages), messages)
