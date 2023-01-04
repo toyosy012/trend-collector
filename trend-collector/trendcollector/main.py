@@ -1,6 +1,7 @@
 import uvicorn
 from fastapi import APIRouter, FastAPI
 from injector import Injector
+
 from libs.infrastructures import (LoggingInjector,
                                   MediaCollectorDependenciesInjector,
                                   ORMEngineInjector,

@@ -4,9 +4,10 @@ from typing import Union
 from fastapi import Path, Query
 from pydantic import BaseModel
 
+from .....infrastructures.response import (DeleteTrend, TrendCommandResult,
+                                           TrendMetrics, TrendSummaries,
+                                           TrendSummary, TrendVolume)
 from .....services.collector import MediaCollectorSvc
-from ....response import (DeleteTrend, TrendCommandResult, TrendMetrics,
-                          TrendSummaries, TrendSummary, TrendVolume)
 
 
 class TwitterWoeid(BaseModel):
@@ -21,7 +22,11 @@ class TrendRoutes:
         resp = self.media_collector.get_trend(_id)
         return TrendSummary(id=resp.id, name=resp.name, updated_at=resp.updated_at)
 
-    async def list_trend(self, page: Union[int, None] = 1, counts: Union[int, None] = 20) -> TrendSummaries:
+    async def list_trend(
+            self,
+            page: Union[int, None] = Query(1, gt=0),
+            counts: Union[int, None] = Query(20, gt=0)
+    ) -> TrendSummaries:
         resp = self.media_collector.list_trends(page, counts)
         trends = [TrendSummary(id=t.id, name=t.name, updated_at=t.updated_at) for t in resp] if 0 < len(resp) else []
 
