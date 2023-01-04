@@ -11,6 +11,11 @@ class CustomException(Exception):
         self.details = details
 
 
+class RequestParamValidation(CustomException):
+    def __init__(self, message: str, details: list[str]):
+        super().__init__(422, message, details)
+
+
 class TwitterException(CustomException):
     """There is no need to override '__init__'."""
 
