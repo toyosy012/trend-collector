@@ -1,5 +1,6 @@
 import uvicorn
 from fastapi import APIRouter, FastAPI
+from fastapi.exceptions import RequestValidationError
 from injector import Injector
 
 from libs.infrastructures import (LoggingInjector,
@@ -19,7 +20,7 @@ from libs.infrastructures.response import (AccountReply, AccountsReply,
                                            DeleteTrend, ErrorReply,
                                            HttpErrorMiddleware,
                                            TrendCommandResult, TrendMetrics,
-                                           TrendSummaries, TrendSummary)
+                                           TrendSummaries, TrendSummary, validation_exception_formatter)
 from libs.services.account import TwitterAccountService
 from libs.services.collector import TwitterCollector
 
@@ -89,6 +90,7 @@ logger = logging_injector.get(LogCustomizer)
 HttpLoggingHandler = logger.create_logging_handler()
 app.add_middleware(HttpLoggingHandler)
 app.add_middleware(HttpErrorMiddleware)
+app.add_exception_handler(RequestValidationError, validation_exception_formatter)
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
