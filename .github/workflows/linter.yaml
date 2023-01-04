@@ -21,11 +21,10 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: 'pypy3.9'
-      - run: |
-          pip install -r dev-requirements.txt
-          ls
-          pylint trendcollector
-          isort trendcollector
+      - run: ls
+      - run: pip install -r dev-requirements.txt
+      - run: pylint trendcollector
+      - run: isort trendcollector
 #        id: dependencies
 #      - uses: ricardochaves/python-lint@v1.4.0
 #        with:
