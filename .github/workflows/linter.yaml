@@ -26,13 +26,6 @@ jobs:
           pwd
       - run: pip install -r dev-requirements.txt
         id: dependencies
-      - run: pylint --rcfile ../pylintrc .
-        working-directory: "trend-collector/trendcollector"
+      - run: pylint --rcfile pylintrc trendcollector
+        working-directory: "trend-collector"
       - run: isort trendcollector
-#      - uses: ricardochaves/python-lint@v1.4.0
-#        with:
-#          python-root-list: "./trendcollector"
-#          use-pylint: true
-#          extra-pylint-options: "--rcfile trend-collector/pylintrc"
-#          use-isort: true
-#          extra-isort-options: "-r"
