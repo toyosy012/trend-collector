@@ -25,8 +25,8 @@ jobs:
 #        id: dependencies
       - uses: ricardochaves/python-lint@v1.4.0
         with:
-          python-root-list: "./trend-collector"
+          python-root-list: "./trend-collector/trendcollector"
           use-pylint: true
-          extra-pylint-options: "trendcollector"
+          extra-pylint-options: "--rcfile ./trend-collector/pylintrc trendcollector"
           use-isort: true
           extra-isort-options: "-r"
