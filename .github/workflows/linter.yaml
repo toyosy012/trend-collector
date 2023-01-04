@@ -27,6 +27,6 @@ jobs:
         with:
           python-root-list: "./trendcollector"
           use-pylint: true
-          extra-pylint-options: "--rcfile ./pylintrc"
+          extra-pylint-options: "--rcfile trend-collector/pylintrc"
           use-isort: true
           extra-isort-options: "-r"
