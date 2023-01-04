@@ -26,6 +26,6 @@ jobs:
           pwd
       - run: pip install -r dev-requirements.txt
         id: dependencies
-      - run: pylint --rcfile ../pylintrc trendcollector
-        working-directory: "trend-collector"
+      - run: pylint --rcfile ../pylintrc .
+        working-directory: "trend-collector/trendcollector"
       - run: isort trendcollector
