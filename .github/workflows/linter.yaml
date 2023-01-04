@@ -8,12 +8,13 @@ on:
       - 'release'
     paths:
       - '**.py'
+  workflow_dispatch:
 jobs:
   python-linter:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: 'trendcollector'
+        working-directory: './trend-collector'
     timeout-minutes: 3
     steps:
       - uses: actions/checkout@v1
