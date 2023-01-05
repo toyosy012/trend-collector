@@ -23,12 +23,12 @@ class TwitterAccountRoutes:
         return AccountReply(
             result=Account(id=resp.id, account_id=str(resp.account_id), name=resp.name, display_name=resp.display_name))
 
-    async def get_account(self, _id: int = Path(gt=0)):
+    async def get_account(self, _id: int = Path(ge=1)):
         resp = self.account_svc.get(_id)
         return AccountReply(
             result=Account(id=resp.id, account_id=str(resp.account_id), name=resp.name, display_name=resp.display_name))
 
-    async def update_account(self, _id: int = Path(gt=0)):
+    async def update_account(self, _id: int = Path(ge=1)):
         resp = self.account_svc.update(_id)
         return AccountReply(
             result=Account(id=resp.id, account_id=str(resp.account_id), name=resp.name, display_name=resp.display_name))
