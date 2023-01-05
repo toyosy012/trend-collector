@@ -18,14 +18,14 @@ class TrendRoutes:
     def __init__(self, collector: MediaCollectorSvc):
         self.media_collector = collector
 
-    async def get_trend(self, _id: int = Path(gt=0)) -> TrendSummary:
+    async def get_trend(self, _id: int = Path(ge=1)) -> TrendSummary:
         resp = self.media_collector.get_trend(_id)
         return TrendSummary(id=resp.id, name=resp.name, updated_at=resp.updated_at)
 
     async def list_trend(
             self,
-            page: Union[int, None] = Query(1, gt=0),
-            counts: Union[int, None] = Query(20, gt=0)
+            page: Union[int, None] = Query(1, ge=1),
+            counts: Union[int, None] = Query(20, ge=1)
     ) -> TrendSummaries:
         resp = self.media_collector.list_trends(page, counts)
         trends = [TrendSummary(id=t.id, name=t.name, updated_at=t.updated_at) for t in resp] if 0 < len(resp) else []
@@ -36,7 +36,7 @@ class TrendRoutes:
             self,
             start_time_utc: datetime,
             end_time_utc: datetime,
-            _id: int = Path(gt=0),
+            _id: int = Path(ge=1),
             granularity: Union[str, None] = Query("hour", regex="^(minute|hour|day)$")
     ) -> TrendMetrics:
 
@@ -49,6 +49,6 @@ class TrendRoutes:
         result = self.media_collector.insert_trends(body.woeid)
         return TrendCommandResult(success=result)
 
-    async def delete_trend(self, _id: int = Path(gt=0)):
+    async def delete_trend(self, _id: int = Path(ge=1)):
         resp = self.media_collector.delete_trend(_id)
         return DeleteTrend(success=resp)
